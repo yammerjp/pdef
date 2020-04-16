@@ -5,8 +5,8 @@ if CommandLine.arguments.count < 3 {
   exit(1)
 }
 
-let plistBefore = LoadPlist(path: CommandLine.arguments[2])
-let plistAfter = LoadPlist(path: CommandLine.arguments[2])
+let plistRootBefore = LoadPlist(path: CommandLine.arguments[2])
+let plistRootAfter = LoadPlist(path: CommandLine.arguments[2])
 
-let tracer = Tracer(root: plistBefore)
-tracer.traceRoot()
+let plist = Plist(root: plistRootBefore)
+plist.traceRoot()

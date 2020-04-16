@@ -11,7 +11,7 @@ enum PlistType: Int {
   case dictionary
 }
 
-class Tracer {
+class Plist {
   var nestDepth : Int
   let root: Any
 
