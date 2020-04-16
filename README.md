@@ -55,9 +55,9 @@ $ defaults export -g - > .plist
 $ bin/patch-defaults .plist
 ```
 
-## Licence
+## License
 
-[MIT](https://github.com/basd4g/patch-defaults/blob/master/LICENCE)
+[MIT](https://github.com/basd4g/patch-defaults/blob/master/LICENSE)
 
 ## Auther
 
