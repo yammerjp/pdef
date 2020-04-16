@@ -16,4 +16,4 @@ func getFullPath(path: String)-> String {
 let plistBefore = Plist(path: getFullPath(path: CommandLine.arguments[2]))
 let plistAfter = Plist(path: getFullPath(path: CommandLine.arguments[2]))
 
-plistBefore.printAll()
+Diff.Dictionary(before: plistBefore.root, after: plistAfter.root)
