@@ -44,6 +44,16 @@ defaults write example.com hoge  -array-add fugafuga
 defaults delete -g hogehoge fugafuga
 ```
 
+## For developper
+
+```sh
+# Compile
+$ make
+
+# run
+$ bin/patch-defaults
+```
+
 ## Licence
 
 [MIT](https://github.com/basd4g/patch-defaults/blob/master/LICENCE)
