@@ -51,7 +51,9 @@ defaults delete -g hogehoge fugafuga
 $ make
 
 # run
-$ bin/patch-defaults
+$ defaults export -g before
+$ defaults export -g after
+$ bin/patch-defaults before after
 ```
 
 ## Licence
