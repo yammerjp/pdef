@@ -51,9 +51,9 @@ defaults delete -g hogehoge fugafuga
 $ make
 
 # run
-$ defaults export -g before
-$ defaults export -g after
-$ bin/patch-defaults before after
+$ defaults export -g - > before.plist
+$ defaults export -g - > after.plist
+$ bin/patch-defaults before.plist after.plist
 ```
 
 ## Licence
