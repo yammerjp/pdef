@@ -2,7 +2,7 @@
 
 patch-defaults is CLI tool to generate shell-script to set property list of macOS.
 
-This is under developping...
+__This is under developping...__
 
 ## Description
 
@@ -12,14 +12,14 @@ patch-defaults generate a shell-script with comparing property lists.
 
 Next time you set same enviromental settings, you only excute the shell-script without manipulate GUI.
 
-## Install
+## Install (Plan)
 
 ```sh
 $ brew tap basd4g/patch-defaults
 $ brew install patch-defaults
 ```
 
-## Usage
+## Usage (Plan)
 
 ```sh
 $ defaults read > before
@@ -31,7 +31,7 @@ $ defaults read > after
 $ patch-defaults before after > path/to/file
 ```
 
-## Generated shell-script example
+## Generated shell-script example (Plan)
 
 ```sh
 #!/bin/sh
@@ -51,9 +51,8 @@ defaults delete -g hogehoge fugafuga
 $ make
 
 # run
-$ defaults export -g - > before.plist
-$ defaults export -g - > after.plist
-$ bin/patch-defaults before.plist after.plist
+$ defaults export -g - > .plist
+$ bin/patch-defaults .plist
 ```
 
 ## Licence
@@ -63,4 +62,3 @@ $ bin/patch-defaults before.plist after.plist
 ## Auther
 
 [basd4g](https://github.com/basd4g)
-
