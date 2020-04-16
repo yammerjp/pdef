@@ -35,6 +35,7 @@ class Tracer {
     }
     nestDepth -= 1
   }
+
   func traceDictionary(tree: NSDictionary) {
     let dictionarySorting = { (a: Any,b: Any) -> Bool in
       return a as! String > b as! String

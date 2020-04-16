@@ -5,16 +5,8 @@ if CommandLine.arguments.count < 3 {
   exit(1)
 }
 
-func getFullPath(path: String)-> String {
-  if path[path.startIndex] == "/" {
-    return path
-  }
-  let currentDir = FileManager.default.currentDirectoryPath
-  return currentDir + "/" + path
-}
+let plistBefore = LoadPlist(path: CommandLine.arguments[2])
+let plistAfter = LoadPlist(path: CommandLine.arguments[2])
 
-let plistBefore = Plist(path: getFullPath(path: CommandLine.arguments[2]))
-let plistAfter = Plist(path: getFullPath(path: CommandLine.arguments[2]))
-
-let tracer = Tracer(root: plistBefore.root)
+let tracer = Tracer(root: plistBefore)
 tracer.traceRoot()
