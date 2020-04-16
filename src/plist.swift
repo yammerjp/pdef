@@ -1,5 +1,9 @@
 import Foundation
 
+protocol PlistKeyType {}
+extension Int: PlistKeyType {}
+extension String: PlistKeyType {}
+
 enum TreeType: Int {
   case string
   case float
@@ -12,19 +16,25 @@ enum TreeType: Int {
 }
 
 class Plist {
-  var nestDepth : Int
+  var nestStack : [PlistKeyType]
   let root: Any
 
   init(root: Any) {
     self.root = root
-    nestDepth = 0
+    nestStack = []
   }
+
   func traceRoot() {
     traceAny(tree: root)
   }
 
+  func traceInTree(branch: Any, key: PlistKeyType) {
+    nestStack.append(key)
+    traceAny(tree: branch)
+    nestStack.removeLast()
+  }
+
   func traceAny(tree: Any) {
-    nestDepth += 1
     let treeType = self.treeType(tree: tree)
     if treeType == .dictionary {
       traceDictionary(tree: tree as! NSDictionary)
@@ -33,7 +43,6 @@ class Plist {
     } else {
       printValue(value: tree, type: treeType)
     }
-    nestDepth -= 1
   }
 
   func traceDictionary(tree: NSDictionary) {
@@ -45,18 +54,17 @@ class Plist {
     let keys: [String] = tree.allKeys.map(toString).sorted(by: dictionaryOrder)
 
     for key in keys {
-      printKey(key: key)
       guard let branch : Any = tree[key] else {
         fputs("Loading dictionary[\(key)] is failed", stderr)
         exit(1)
       }
-      traceAny(tree: branch)
+      traceInTree(branch: branch, key: key)
     }
   }
 
   func traceArray(tree: NSArray) {
-    for branch in tree {
-      traceAny(tree: branch)
+    for (index, branch) in tree.enumerated() {
+      traceInTree(branch: branch, key: index)
     }
   }
 
@@ -87,12 +95,7 @@ class Plist {
   }
 
   func printValue(value: Any, type: TreeType) {
-    print( String(repeating: "  ", count: nestDepth+1)
-          + String(describing: value)
-          + " (\(String(describing: type)))")
-  }
-
-  func printKey(key: String) {
-    print( String(repeating: "  ", count: nestDepth) + key + ":" )
+    let properties = nestStack.map({ (key) -> String in return "\(key)"}).joined(separator: "->")
+    print("\(properties) : \(value) (\(String(describing: type)))")
   }
 }
