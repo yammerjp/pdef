@@ -1,6 +1,6 @@
 import Foundation
 
-enum PlistType: Int {
+enum TreeType: Int {
   case string
   case float
   case integer
@@ -25,24 +25,24 @@ class Plist {
 
   func traceAny(tree: Any) {
     nestDepth += 1
-    let plistType = self.plistType(tree: tree)
-    if plistType == .dictionary {
+    let treeType = self.treeType(tree: tree)
+    if treeType == .dictionary {
       traceDictionary(tree: tree as! NSDictionary)
-    } else if plistType == .array {
+    } else if treeType == .array {
       traceArray(tree: tree as! NSArray)
     } else {
-      printValue(value: tree, type: plistType)
+      printValue(value: tree, type: treeType)
     }
     nestDepth -= 1
   }
 
   func traceDictionary(tree: NSDictionary) {
-    let dictionarySorting = { (a: Any,b: Any) -> Bool in
+    let dictionaryOrder = { (a: Any,b: Any) -> Bool in
       return a as! String > b as! String
     }
     let toString =  { (any:Any) -> String in return String(describing: any)}
 
-    let keys: [String] = tree.allKeys.map(toString).sorted(by: dictionarySorting)
+    let keys: [String] = tree.allKeys.map(toString).sorted(by: dictionaryOrder)
 
     for key in keys {
       printKey(key: key)
@@ -60,7 +60,7 @@ class Plist {
     }
   }
 
-  func plistType(tree: Any)-> PlistType {
+  func treeType(tree: Any)-> TreeType {
     let typeID = CFGetTypeID(tree as CFTypeRef?)
     switch  typeID {
       case CFNumberGetTypeID():
@@ -86,7 +86,7 @@ class Plist {
     }
   }
 
-  func printValue(value: Any, type: PlistType) {
+  func printValue(value: Any, type: TreeType) {
     print( String(repeating: "  ", count: nestDepth+1)
           + String(describing: value)
           + " (\(String(describing: type)))")
