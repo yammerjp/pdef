@@ -13,7 +13,7 @@ class Plist {
   func printAll(){
     let keys = root.allKeys
     for key in keys {
-      print( "\(key): \(String(describing: root[key]))")
+      print( "\(key): " + String(describing: root[key]))
     }
   }
 }
