@@ -5,7 +5,7 @@ if CommandLine.arguments.count < 2 {
   exit(1)
 }
 
-let plistRoot = LoadPlist(path: CommandLine.arguments[2])
+let plistRoot = LoadPlist(path: CommandLine.arguments[1])
 
 let plist = Plist(root: plistRoot)
 
