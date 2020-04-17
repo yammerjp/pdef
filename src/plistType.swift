@@ -21,7 +21,7 @@ extension Array where Element == PlistKey {
   func joinNotContains(_ items: [Element]) -> [Element] {
     var joined = self
     for item in items {
-      if joined.contains(item) {
+      if !joined.contains(item) {
         joined.append(item)
       }
     }
