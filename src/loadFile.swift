@@ -2,7 +2,7 @@ import Foundation
 
 fileprivate let validSyntaxPlistDir = "/tmp/patch-defaults"
 
-func loadPlist(path: String) -> NSDictionary {
+func loadFile(path: String) -> NSDictionary {
   let validSyntaxPlistPath = "\(validSyntaxPlistDir)/\(nowTime()).txt"
 
   let text = loadInvalidSyntaxPlist(path: full(path: path))

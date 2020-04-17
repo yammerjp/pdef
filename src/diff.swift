@@ -1,10 +1,10 @@
 import Foundation
 
 class Diff {
-  let A: PlistOfADomain
-  let B: PlistOfADomain
+  let A: Plist
+  let B: Plist
 
-  init(A: PlistOfADomain, B: PlistOfADomain) {
+  init(A: Plist, B: Plist) {
     self.A = A
     self.B = B
   }
@@ -15,8 +15,8 @@ class Diff {
 
   private func compareKeys() {
     // print("called diffKey()")
-    let keysA: [String] = A.keys()
-    let keysB: [String] = B.keys()
+    let keysA: [String] = A.treeKeys()
+    let keysB: [String] = B.treeKeys()
     let keysAll = Array(Set([keysA, keysB].joined()))
 
     for key in keysAll {
@@ -34,23 +34,23 @@ class Diff {
   }
 
   private func compareValueOfSameKey(key: String) {
-    A.push(key: key)
-    B.push(key: key)
+    A.pushKey(key)
+    B.pushKey(key)
     compareValue()
-    A.pop()
-    B.pop()
+    A.popKey()
+    B.popKey()
   }
 
   private func containsOnlyA(key: String) {
-    A.push(key: key)
+    A.pushKey(key)
     printDelete()
-    A.pop()
+    A.popKey()
   }
 
   private func containsOnlyB(key: String) {
-    B.push(key: key)
+    B.pushKey(key)
     printWrite()
-    B.pop()
+    B.popKey()
   }
 
   private func printDelete() {
@@ -86,11 +86,9 @@ class Diff {
     printWrite()
   }
 
-  private func commonType() -> PlistType? {
-    let typeA = getPlistType(A.tree)
-    let typeB = getPlistType(B.tree)
-    if typeA == typeB {
-      return typeA
+  private func commonType() -> PlistValueType? {
+    if A.treeType == B.treeType {
+      return A.treeType
     }
     return nil
   }

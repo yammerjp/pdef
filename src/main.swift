@@ -5,11 +5,11 @@ if CommandLine.arguments.count < 3 {
   exit(1)
 }
 
-let plistRootA = loadPlist(path: CommandLine.arguments[1])
-let plistRootB = loadPlist(path: CommandLine.arguments[2])
+let plistRootA = loadFile(path: CommandLine.arguments[1])
+let plistRootB = loadFile(path: CommandLine.arguments[2])
 
-let plistA = PlistOfADomain(root: plistRootA)
-let plistB = PlistOfADomain(root: plistRootB)
+let plistA = Plist(root: plistRootA)
+let plistB = Plist(root: plistRootB)
 
 let diff = Diff(A: plistA, B: plistB)
 diff.comparePlistOfADomain()
