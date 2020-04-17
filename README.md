@@ -22,13 +22,13 @@ $ brew install patch-defaults
 ## Usage (Plan)
 
 ```sh
-$ defaults read > before
+$ patch-defaults before
 
 # Set any settings on GUI
 
-$ defaults read > after
+$ patch-defaults after
 
-$ patch-defaults before after > path/to/file
+$ patch-defaults diff
 ```
 
 ## Generated shell-script example (Plan)
