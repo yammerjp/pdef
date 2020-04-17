@@ -1,12 +1,17 @@
 import Foundation
 
-if CommandLine.arguments.count < 2 {
+if CommandLine.arguments.count < 3 {
   fputs("Missing Arguments", stderr)
   exit(1)
 }
 
-let plistRoot = LoadPlist(path: CommandLine.arguments[1])
+let plistRootA = LoadPlist(path: CommandLine.arguments[1])
+let plistRootB = LoadPlist(path: CommandLine.arguments[2])
 
-let plist = Plist(root: plistRoot)
+let plistA = Plist(root: plistRootA)
+let plistB = Plist(root: plistRootB)
 
-plist.traceRoot()
+let diff = Diff(A: plistA, B: plistB)
+diff.diffKey()
+
+// plist.traceRoot()

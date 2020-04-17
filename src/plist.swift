@@ -16,25 +16,58 @@ enum TreeType: Int {
 }
 
 class Plist {
-  var nestStack : [PlistKeyType]
+  var keyStack : [PlistKeyType]
   let root: Any
 
   init(root: Any) {
     self.root = root
-    nestStack = []
+    keyStack = []
+  }
+
+  func tree()-> Any {
+    var tree = root
+    for key in keyStack {
+      if isDictionary(tree: tree) {
+        tree = (tree as! NSDictionary) [key]
+        continue
+      }
+      if isArray(tree: tree) {
+        tree = (tree as! NSArray) [key as! Int]
+        continue
+      }
+      fputs("Plist.keyStack is invalid", stderr)
+      exit(1)
+    }
+    return tree
+  }
+
+  func keys()-> [String] {
+    let tree = self.tree()
+    if isDictionary(tree: tree) {
+      return keys(tree: tree as! NSDictionary)
+    }
+    return []
+  }
+
+  func push(key: PlistKeyType) {
+    keyStack.append(key)
+  }
+
+  func pop(){
+    keyStack.removeLast()
   }
 
   func traceRoot() {
     traceAny(tree: root)
   }
 
-  func traceInTree(branch: Any, key: PlistKeyType) {
-    nestStack.append(key)
+  private func traceInTree(branch: Any, key: PlistKeyType) {
+    push(key: key)
     traceAny(tree: branch)
-    nestStack.removeLast()
+    pop()
   }
 
-  func traceAny(tree: Any) {
+  private func traceAny(tree: Any) {
     let treeType = self.treeType(tree: tree)
     if treeType == .dictionary {
       traceDictionary(tree: tree as! NSDictionary)
@@ -43,6 +76,14 @@ class Plist {
     } else {
       printValue(value: tree, type: treeType)
     }
+  }
+
+  func keys(tree: NSArray)-> [Int] {
+    var keys: [Int] = []
+    for (index, _) in tree.enumerated() {
+      keys.append(index)
+    }
+    return keys
   }
 
   func keys(tree: NSDictionary)-> [String] {
@@ -55,7 +96,7 @@ class Plist {
     return keys
   }
 
-  func traceDictionary(tree: NSDictionary) {
+  private func traceDictionary(tree: NSDictionary) {
     let keys = self.keys(tree: tree)
     for key in keys {
       guard let branch : Any = tree[key] else {
@@ -66,10 +107,30 @@ class Plist {
     }
   }
 
-  func traceArray(tree: NSArray) {
+  private func traceArray(tree: NSArray) {
     for (index, branch) in tree.enumerated() {
       traceInTree(branch: branch, key: index)
     }
+  }
+
+  func isTip(tree: Any)-> Bool {
+    let type = treeType(tree: tree)
+    return type != .dictionary && type != .array
+  }
+
+  func isArray(tree: Any)-> Bool {
+    return treeType(tree: tree) == .array
+  }
+
+  func isArray()-> Bool {
+    return treeType(tree: tree()) == .array
+  }
+
+  func isDictionary(tree: Any)-> Bool {
+    return treeType(tree: tree) == .dictionary
+  }
+  func isDictionary()-> Bool {
+    return treeType(tree: tree()) == .dictionary
   }
 
   func treeType(tree: Any)-> TreeType {
@@ -99,7 +160,7 @@ class Plist {
   }
 
   func printValue(value: Any, type: TreeType) {
-    let properties = nestStack.map({ (key) -> String in return "\(key)"}).joined(separator: "->")
+    let properties = keyStack.map({ (key) -> String in return "\(key)"}).joined(separator: "->")
     print("\(properties) : \(value) (\(String(describing: type)))")
   }
 }
