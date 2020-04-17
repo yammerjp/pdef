@@ -15,9 +15,9 @@ class Diff {
 
   private func compareKeys() {
     // print("called diffKey()")
-    let keysA: [String] = A.treeKeys()
-    let keysB: [String] = B.treeKeys()
-    let keysAll = Array(Set([keysA, keysB].joined()))
+    let keysA: [PlistKey] = A.treeKeys()
+    let keysB: [PlistKey] = B.treeKeys()
+    let keysAll = keysA.joinNotContains(keysB)
 
     for key in keysAll {
       if keysA.contains(key) {
@@ -33,7 +33,7 @@ class Diff {
     }
   }
 
-  private func compareValueOfSameKey(key: String) {
+  private func compareValueOfSameKey(key: PlistKey) {
     A.pushKey(key)
     B.pushKey(key)
     compareValue()
@@ -41,28 +41,27 @@ class Diff {
     B.popKey()
   }
 
-  private func containsOnlyA(key: String) {
+  private func containsOnlyA(key: PlistKey) {
     A.pushKey(key)
     printDelete()
     A.popKey()
   }
 
-  private func containsOnlyB(key: String) {
+  private func containsOnlyB(key: PlistKey) {
     B.pushKey(key)
     printWrite()
     B.popKey()
   }
 
   private func printDelete() {
-    print("delete domain \(A.keyStack.join())")
+    print("delete domain \(A.keyStack.string())")
   }
 
   private func printWrite() {
-    print("write domain \(B.keyStack.join()) \(String(describing: B.tree))")
+    print("write domain \(B.keyStack.string()) \(String(describing: B.tree))")
   }
 
   private func compareValue() {
-    // print("called compareValue")
     guard let commonType = self.commonType() else {
       print("Not same type")
       return
@@ -74,7 +73,7 @@ class Diff {
     }
 
     if commonType == .array {
-      print("Skip array")
+      compareKeys()
       return
     }
 

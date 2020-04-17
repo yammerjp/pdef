@@ -15,7 +15,7 @@ class Plist {
     var tree = root
     for key in keyStack {
       if getPlistValueType(tree) == .dictionary {
-        tree = (tree as! NSDictionary)[key]
+        tree = (tree as! NSDictionary)[key as! String]
         continue
       }
       if getPlistValueType(tree) == .array {
@@ -38,10 +38,16 @@ class Plist {
     restructTree()
   }
 
-  func treeKeys()-> [String] {
+  func treeKeys()-> [PlistKey] {
     let tree = self.tree
     if treeType == .dictionary {
       return keys(tree: tree as! NSDictionary)
+    }
+    if treeType == .array {
+      let lastIndex = (tree as! NSArray).count - 1
+      if lastIndex > 0 {
+        return [Int](0...lastIndex)
+      }
     }
     return []
   }
