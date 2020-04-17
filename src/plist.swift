@@ -45,14 +45,18 @@ class Plist {
     }
   }
 
-  func traceDictionary(tree: NSDictionary) {
+  func keys(tree: NSDictionary)-> [String] {
     let dictionaryOrder = { (a: Any,b: Any) -> Bool in
       return a as! String > b as! String
     }
     let toString =  { (any:Any) -> String in return String(describing: any)}
 
     let keys: [String] = tree.allKeys.map(toString).sorted(by: dictionaryOrder)
+    return keys
+  }
 
+  func traceDictionary(tree: NSDictionary) {
+    let keys = self.keys(tree: tree)
     for key in keys {
       guard let branch : Any = tree[key] else {
         fputs("Loading dictionary[\(key)] is failed", stderr)
