@@ -54,11 +54,11 @@ class Diff {
   }
 
   private func printDelete() {
-    print("delete domain \(A.keyStack.string())")
+    print("delete \(A.domain) \(A.keyStack.string())")
   }
 
   private func printWrite() {
-    print("write domain \(B.keyStack.string()) \(String(describing: B.tree))")
+    print("write \(B.domain) \(B.keyStack.string()) \(String(describing: B.tree))")
   }
 
   private func compareValue() {

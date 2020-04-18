@@ -67,4 +67,10 @@ class Plist {
       return getPlistValueType(tree)
     }
   }
+
+  var domain: String {
+    get {
+      return keyStack[0] as! String
+    }
+  }
 }
