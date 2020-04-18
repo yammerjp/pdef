@@ -47,13 +47,21 @@ defaults delete -g hogehoge fugafuga
 ## For developper
 
 ```sh
-# Compile
+# Clone
+$ git clone https://github.com/basd4g/patch-defaults
+$ cd patch-defaults
+
+# Build
 $ make
 
-# run
-$ defaults export net.basd4g.debug - > before.plist
-$ defaults export net.basd4g.debug - > after.plist
-$ bin/patch-defaults net.basd4g.debug before.plist after.plist
+# Run Test
+$ make
+
+# Run
+$ defaults export -g - > before.plist
+$ defaults write -g patch-default -string debugString
+$ defaults export -g - > after.plist
+$ bin/patch-defaults -g before.plist after.plist
 ```
 
 ## License
@@ -63,3 +71,4 @@ $ bin/patch-defaults net.basd4g.debug before.plist after.plist
 ## Auther
 
 [basd4g](https://github.com/basd4g)
+
