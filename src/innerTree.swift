@@ -14,7 +14,7 @@ class InnerTree {
 
   static func dictionaryKeys(tree: NSDictionary) -> [String] {
     let dictionaryOrder = { (a: Any, b: Any) -> Bool in
-      a as! String > b as! String
+      !(a as! String > b as! String)
     }
     let toString = { (any: Any) -> String in String(describing: any) }
     let keys: [String] = tree.allKeys.map(toString).sorted(by: dictionaryOrder)
