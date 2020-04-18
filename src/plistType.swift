@@ -6,9 +6,12 @@ extension String: PlistKey {}
 
 extension Array where Element == PlistKey {
   func string() -> String {
+    return string(separator: "->")
+  }
+  func string(separator: String) -> String {
     return map { key -> String in
       String(describing: key)
-    }.joined(separator: "->")
+    }.joined(separator: separator)
   }
   func contains(_ item: PlistKey)-> Bool {
     for e in self  {
