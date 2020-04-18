@@ -43,31 +43,19 @@ class Diff {
 
   private func containsOnlyA(key: PlistKey) {
     A.pushSubTreePath(key: key)
-    printDelete()
+    ShellScriptCreator.delete(treePath:A.subTreePath)
     A.popSubTreePath()
   }
 
   private func containsOnlyB(key: PlistKey) {
     B.pushSubTreePath(key: key)
-    printWrite()
+    ShellScriptCreator.add(treePath:B.subTreePath, tree: B.subTree)
     B.popSubTreePath()
-  }
-
-  private func printDelete() {
-    print("delete \(A.domain) \(A.subTreePath.string())")
-  }
-
-  private func printWrite() {
-    print("write \(B.domain) \(B.subTreePath.string()) \(String(describing: B.subTree))")
-  }
-  private func printReWrite() {
-    printDelete()
-    printWrite()
   }
 
   private func compareValue() {
     guard let commonType = self.commonType() else {
-      printReWrite()
+      ShellScriptCreator.update(treePath:B.subTreePath, tree: B.subTree)
       return
     }
     if commonType == .dictionary || commonType == .array {
@@ -77,7 +65,7 @@ class Diff {
     if String(describing: A.subTree) == String(describing: B.subTree) {
       return
     }
-    printReWrite()
+    ShellScriptCreator.update(treePath:B.subTreePath, tree: B.subTree)
   }
 
   private func commonType() -> PlistValueType? {
