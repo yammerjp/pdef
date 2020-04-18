@@ -6,9 +6,12 @@ extension String: PlistKey {}
 
 extension Array where Element == PlistKey {
   func string() -> String {
+    return string(separator: "->")
+  }
+  func string(separator: String) -> String {
     return map { key -> String in
       String(describing: key)
-    }.joined(separator: "->")
+    }.joined(separator: separator)
   }
   func contains(_ item: PlistKey)-> Bool {
     for e in self  {
@@ -33,11 +36,11 @@ enum PlistValueType: Int {
   case string
   case float
   case integer
-  case boolean
+  case bool
   case data
   case date
   case array
-  case dictionary
+  case dict
 }
 
 func getPlistValueType(_ tree: Any) -> PlistValueType {
@@ -51,7 +54,7 @@ func getPlistValueType(_ tree: Any) -> PlistValueType {
   case CFArrayGetTypeID():
     return .array
   case CFDictionaryGetTypeID():
-    return .dictionary
+    return .dict
   case CFStringGetTypeID():
     return .string
   case CFDataGetTypeID():
@@ -59,10 +62,15 @@ func getPlistValueType(_ tree: Any) -> PlistValueType {
   case CFDateGetTypeID():
     return .date
   case CFBooleanGetTypeID():
-    return .boolean
+    return .bool
   default:
     fputs("Detecting plist type is failed", stderr)
     exit(1)
   }
+}
+
+func plistValueIsParent(_ value: Any) -> Bool {
+  let valueType = getPlistValueType(value)
+  return valueType == .array || valueType == .dict
 }
 
