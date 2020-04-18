@@ -5,6 +5,7 @@ SCRIPT_DIR=$(cd $(dirname $0); pwd)
 cd "$SCRIPT_DIR/.."
 
 domain="net.basd4g.debug"
+test_name="$1"
 
 function dump() {
   filename="$1"
@@ -12,10 +13,15 @@ function dump() {
   defaults export "$domain" - > "$filename"
 }
 
+echo "Info: Run test '$test_name'"
+
+echo "Info: Initialize plist of '$domain'"
+sh "test/$test_name/init.sh" "$domain"
+
 dump 1.xml
 
-sh test/defaults.sh "$domain"
 echo "Info: Change plist of '$domain'"
+sh "test/$test_name/defaults.sh" "$domain"
 
 dump 2.xml
 

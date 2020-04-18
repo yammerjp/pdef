@@ -19,9 +19,6 @@ jobs:
     - name: Build
       run : make
 
-    - name: Initialize plist
-      run : make test-init
-        
     - name: Run
       run : make test-run
         

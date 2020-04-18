@@ -4,7 +4,5 @@ all :
 clean :
 	rm -r bin
 test-run :
-	./test/run.sh net.basd4g.debug
-test-init :
-	./test/init.sh net.basd4g.debug
+	./test/run.sh 1
   
