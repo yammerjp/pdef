@@ -43,26 +43,7 @@ class Plist {
   }
 
   func subTreeKeys()-> [PlistKey] {
-    if subTreeType == .dictionary {
-      return keys(subTree: subTree as! NSDictionary)
-    }
-    if subTreeType == .array {
-      let lastIndex = (subTree as! NSArray).count - 1
-      if lastIndex > 0 {
-        return [Int](0...lastIndex)
-      }
-    }
-    return []
-  }
-
-  private func keys(subTree: NSDictionary) -> [String] {
-    let dictionaryOrder = { (a: Any, b: Any) -> Bool in
-      a as! String > b as! String
-    }
-    let toString = { (any: Any) -> String in String(describing: any) }
-
-    let keys: [String] = subTree.allKeys.map(toString).sorted(by: dictionaryOrder)
-    return keys
+    InnerTree.keys(tree: subTree)
   }
 
   var subTreeType: PlistValueType {
