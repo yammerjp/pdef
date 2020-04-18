@@ -17,13 +17,19 @@ class ShellScriptCreator {
     let value = string(value: tree)
     print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
   }
-  static func delete(treePath: [PlistKey]) {
-    print("delete is called. path: \(treePath.string(separator: "."))")
 
+  static func delete(treePath: [PlistKey]) {
+    if treePath.count != 2 {
+      print("# treePath.count != 2. skip")
+      return
+    }
+    let domain = treePath[0] as! String
+    let key = treePath[1] as! String
+    print("defaults delete \(domain) \"\(key)\"")
   }
 
   static func update(treePath: [PlistKey], tree: Any) {
-    print("update is called. path: \(treePath.string(separator: ".")) value: \(tree)")
+    print("# update is called. path: \(treePath.string(separator: ".")) value: \(tree)")
   }
 
   static func string(value: Any) -> String {
