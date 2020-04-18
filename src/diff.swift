@@ -58,7 +58,7 @@ class Diff {
       ShellScriptCreator.update(treePath:B.subTreePath, tree: B.subTree)
       return
     }
-    if commonType == .dictionary || commonType == .array {
+    if commonType == .dict || commonType == .array {
       compareKeys()
       return
     }

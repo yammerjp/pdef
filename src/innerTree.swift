@@ -3,7 +3,7 @@ import Foundation
 class InnerTree {
   static func keys(tree: Any) -> [PlistKey] {
     let treeType = getPlistValueType(tree)
-    if treeType == .dictionary {
+    if treeType == .dict {
       return dictionaryKeys(tree: tree as! NSDictionary)
     }
     if treeType == .array {
@@ -12,7 +12,7 @@ class InnerTree {
     return []
   }
 
-  private static func dictionaryKeys(tree: NSDictionary) -> [String] {
+  static func dictionaryKeys(tree: NSDictionary) -> [String] {
     let dictionaryOrder = { (a: Any, b: Any) -> Bool in
       a as! String > b as! String
     }
@@ -43,7 +43,7 @@ class InnerTree {
   static func subTree(path: [PlistKey], rootTree: Any)-> Any{
     var tree = rootTree
     for key in path {
-      if getPlistValueType(tree) == .dictionary {
+      if getPlistValueType(tree) == .dict {
         tree = (tree as! NSDictionary)[key as! String]
         continue
       }

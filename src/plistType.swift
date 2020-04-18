@@ -36,11 +36,11 @@ enum PlistValueType: Int {
   case string
   case float
   case integer
-  case boolean
+  case bool
   case data
   case date
   case array
-  case dictionary
+  case dict
 }
 
 func getPlistValueType(_ tree: Any) -> PlistValueType {
@@ -54,7 +54,7 @@ func getPlistValueType(_ tree: Any) -> PlistValueType {
   case CFArrayGetTypeID():
     return .array
   case CFDictionaryGetTypeID():
-    return .dictionary
+    return .dict
   case CFStringGetTypeID():
     return .string
   case CFDataGetTypeID():
@@ -62,7 +62,7 @@ func getPlistValueType(_ tree: Any) -> PlistValueType {
   case CFDateGetTypeID():
     return .date
   case CFBooleanGetTypeID():
-    return .boolean
+    return .bool
   default:
     fputs("Detecting plist type is failed", stderr)
     exit(1)
