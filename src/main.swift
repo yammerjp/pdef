@@ -1,17 +1,21 @@
 import Foundation
 
-if CommandLine.arguments.count < 3 {
+if CommandLine.arguments.count < 4 {
   fputs("Missing Arguments", stderr)
   exit(1)
 }
 
-let plistRootA = loadFile(path: CommandLine.arguments[1])
-let plistRootB = loadFile(path: CommandLine.arguments[2])
+let format: PlistFormat = .xml
+let domain = CommandLine.arguments[1]
+let domainPlistTreeA = loadFile(path: CommandLine.arguments[2], format: format)
+let domainPlistTreeB = loadFile(path: CommandLine.arguments[3], format: format)
 
-let plistA = Plist(rootTree: plistRootA)
-let plistB = Plist(rootTree: plistRootB)
+let plistA = Plist(domainTree: domainPlistTreeA, domain: domain)
+let plistB = Plist(domainTree: domainPlistTreeB, domain: domain)
 
 let diff = Diff(A: plistA, B: plistB)
 diff.comparePlist()
 
-removeTmpDirectory()
+if format != .xml {
+  removeTmpDirectory()
+}

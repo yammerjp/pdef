@@ -1,17 +1,29 @@
 import Foundation
 
+enum PlistFormat: Int {
+  case xml
+  case ascii
+}
+
 fileprivate let validSyntaxPlistDir = "/tmp/patch-defaults"
 
-func loadFile(path: String) -> NSDictionary {
-  let validSyntaxPlistPath = "\(validSyntaxPlistDir)/\(nowTime()).txt"
+func loadFile(path: String, format: PlistFormat) -> NSDictionary {
+  var loadindPlistPath: String = ""
 
-  let text = loadInvalidSyntaxPlist(path: full(path: path))
-  let textFixed = text.unEscapeBackSlash().replaceBinary2Dummy()
+  if format == .ascii {
+    let validSyntaxPlistPath = "\(validSyntaxPlistDir)/\(nowTime()).txt"
 
-  mkdir(path: validSyntaxPlistDir)
-  writeValidSyntaxText2File(path: validSyntaxPlistPath, text: textFixed)
+    let text = loadInvalidSyntaxPlist(path: full(path: path))
+    let textFixed = text.unEscapeBackSlash().replaceBinary2Dummy()
 
-  return loadValidSyntaxPlist(path: validSyntaxPlistPath)
+    mkdir(path: validSyntaxPlistDir)
+    writeValidSyntaxText2File(path: validSyntaxPlistPath, text: textFixed)
+    loadindPlistPath = validSyntaxPlistPath
+  } else {
+    loadindPlistPath = path
+  }
+
+  return loadValidSyntaxPlist(path: loadindPlistPath)
 }
 
 func removeTmpDirectory() {

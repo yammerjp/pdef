@@ -51,9 +51,9 @@ defaults delete -g hogehoge fugafuga
 $ make
 
 # run
-$ defaults read > before.plist
-$ defaults read > after.plist
-$ bin/patch-defaults before.plist after.plist
+$ defaults export net.basd4g.debug - > before.plist
+$ defaults export net.basd4g.debug - > after.plist
+$ bin/patch-defaults net.basd4g.debug before.plist after.plist
 ```
 
 ## License

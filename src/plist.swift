@@ -11,6 +11,15 @@ class Plist {
     subTree = rootTree
   }
 
+  init(domainTree: Any, domain: String) {
+    let rootTree: NSDictionary = [
+      domain : domainTree
+    ]
+    self.rootTree = rootTree
+    subTreePath = []
+    subTree = rootTree
+  }
+
   private func restructSubTree() {
     subTree = tree(path: subTreePath)
   }
