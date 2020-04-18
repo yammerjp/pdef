@@ -26,8 +26,8 @@ echo "info: fix changed plist"
 dump 3.xml
 
 if ! diff 1.xml 3.xml ; then
-  echo  'error: 1.xml != 3.xml'
-  exit(1)
+  echo  "error: 1.xml != 3.xml"
+  exit 1
 fi
 
 echo 'info: change fixed plist'
@@ -36,8 +36,8 @@ echo 'info: change fixed plist'
 dump 4.xml
 
 if ! diff 2.xml 4.xml ; then
-  echo  'error: 2.xml != 4.xml'
-  exit(1)
+  echo  "error: 2.xml != 4.xml"
+  exit 1
 fi
 
 rm 1.xml 2.xml 3.xml 4.xml
