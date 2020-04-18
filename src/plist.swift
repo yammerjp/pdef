@@ -25,20 +25,7 @@ class Plist {
   }
 
   func tree(path: [PlistKey])-> Any {
-    var tree = rootTree
-    for key in path {
-      if getPlistValueType(tree) == .dictionary {
-        tree = (tree as! NSDictionary)[key as! String]
-        continue
-      }
-      if getPlistValueType(tree) == .array {
-        tree = (tree as! NSArray)[key as! Int]
-        continue
-      }
-      fputs("TreePath '\(path.string())' is invalid", stderr)
-      exit(1)
-    }
-    return tree
+    return InnerTree.subTree(path: path, rootTree: rootTree)
   }
 
   func pushSubTreePath(key: PlistKey) {

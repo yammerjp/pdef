@@ -1,7 +1,7 @@
 import Foundation
 
 class InnerTree {
-  static func keys(tree: Any)-> [PlistKey] {
+  static func keys(tree: Any) -> [PlistKey] {
     let treeType = getPlistValueType(tree)
     if treeType == .dictionary {
       return dictionaryKeys(tree: tree as! NSDictionary)
@@ -12,7 +12,7 @@ class InnerTree {
     return []
   }
 
-  static private func dictionaryKeys(tree: NSDictionary) -> [String] {
+  private static func dictionaryKeys(tree: NSDictionary) -> [String] {
     let dictionaryOrder = { (a: Any, b: Any) -> Bool in
       a as! String > b as! String
     }
@@ -21,11 +21,39 @@ class InnerTree {
     return keys
   }
 
-  static private func arrayKeys(tree: NSArray) -> [Int] {
+  private static func arrayKeys(tree: NSArray) -> [Int] {
     let lastIndex = tree.count - 1
     if lastIndex <= 0 {
       return []
     }
-    return [Int](0...lastIndex)
+    return [Int](0 ... lastIndex)
+  }
+
+  static func allValueIsString(tree: Any) -> Bool {
+    let keys = self.keys(tree: tree)
+
+    for key in keys {
+      if getPlistValueType(subTree(path: [key], rootTree: tree)) != .string {
+        return false
+      }
+    }
+    return true
+  }
+
+  static func subTree(path: [PlistKey], rootTree: Any)-> Any{
+    var tree = rootTree
+    for key in path {
+      if getPlistValueType(tree) == .dictionary {
+        tree = (tree as! NSDictionary)[key as! String]
+        continue
+      }
+      if getPlistValueType(tree) == .array {
+        tree = (tree as! NSArray)[key as! Int]
+        continue
+      }
+      fputs("TreePath '\(path.string())' is invalid", stderr)
+      exit(1)
+    }
+    return tree
   }
 }
