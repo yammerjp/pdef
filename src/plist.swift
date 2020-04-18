@@ -12,8 +12,12 @@ class Plist {
   }
 
   private func restructSubTree() {
+    subTree = tree(path: subTreePath)
+  }
+
+  func tree(path: [PlistKey])-> Any {
     var tree = rootTree
-    for key in subTreePath {
+    for key in path {
       if getPlistValueType(tree) == .dictionary {
         tree = (tree as! NSDictionary)[key as! String]
         continue
@@ -22,18 +26,18 @@ class Plist {
         tree = (tree as! NSArray)[key as! Int]
         continue
       }
-      fputs("Plist.subTreePath is invalid", stderr)
+      fputs("TreePath '\(path.string())' is invalid", stderr)
       exit(1)
     }
-    subTree = tree
+    return tree
   }
 
-  func pushKey(_ key: PlistKey) {
+  func pushSubTreePath(key: PlistKey) {
     subTreePath.append(key)
     restructSubTree()
   }
 
-  func popKey() {
+  func popSubTreePath() {
     subTreePath.removeLast()
     restructSubTree()
   }

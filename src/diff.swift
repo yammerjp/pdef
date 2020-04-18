@@ -34,23 +34,23 @@ class Diff {
   }
 
   private func compareValueOfSameKey(key: PlistKey) {
-    A.pushKey(key)
-    B.pushKey(key)
+    A.pushSubTreePath(key: key)
+    B.pushSubTreePath(key: key)
     compareValue()
-    A.popKey()
-    B.popKey()
+    A.popSubTreePath()
+    B.popSubTreePath()
   }
 
   private func containsOnlyA(key: PlistKey) {
-    A.pushKey(key)
+    A.pushSubTreePath(key: key)
     printDelete()
-    A.popKey()
+    A.popSubTreePath()
   }
 
   private func containsOnlyB(key: PlistKey) {
-    B.pushKey(key)
+    B.pushSubTreePath(key: key)
     printWrite()
-    B.popKey()
+    B.popSubTreePath()
   }
 
   private func printDelete() {
