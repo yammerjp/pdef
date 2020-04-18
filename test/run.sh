@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Initialize
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
@@ -45,7 +45,9 @@ if ! diff 2.xml 4.xml ; then
   exit 1
 fi
 
-rm 1.xml 2.xml 3.xml 4.xml
+if [ "$DEBUG" != "1" ] ; then
+  rm 1.xml 2.xml 3.xml 4.xml
+fi
 
 echo  'Info: Success!'
 
