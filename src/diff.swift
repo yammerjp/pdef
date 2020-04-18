@@ -15,8 +15,8 @@ class Diff {
 
   private func compareKeys() {
     // print("called diffKey()")
-    let keysA: [PlistKey] = A.treeKeys()
-    let keysB: [PlistKey] = B.treeKeys()
+    let keysA: [PlistKey] = A.subTreeKeys()
+    let keysB: [PlistKey] = B.subTreeKeys()
     let keysAll = keysA.joinNotContains(keysB)
 
     for key in keysAll {
@@ -54,11 +54,11 @@ class Diff {
   }
 
   private func printDelete() {
-    print("delete \(A.domain) \(A.keyStack.string())")
+    print("delete \(A.domain) \(A.subTreePath.string())")
   }
 
   private func printWrite() {
-    print("write \(B.domain) \(B.keyStack.string()) \(String(describing: B.tree))")
+    print("write \(B.domain) \(B.subTreePath.string()) \(String(describing: B.subTree))")
   }
   private func printReWrite() {
     printDelete()
@@ -74,15 +74,15 @@ class Diff {
       compareKeys()
       return
     }
-    if String(describing: A.tree) == String(describing: B.tree) {
+    if String(describing: A.subTree) == String(describing: B.subTree) {
       return
     }
     printReWrite()
   }
 
   private func commonType() -> PlistValueType? {
-    if A.treeType == B.treeType {
-      return A.treeType
+    if A.subTreeType == B.subTreeType {
+      return A.subTreeType
     }
     return nil
   }

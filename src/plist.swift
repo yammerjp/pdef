@@ -1,19 +1,19 @@
 import Foundation
 
 class Plist {
-  private(set) var keyStack: [PlistKey]
-  private(set) var tree: Any
-  let root: Any
+  let rootTree: Any
+  private(set) var subTreePath: [PlistKey]
+  private(set) var subTree: Any
 
-  init(root: Any) {
-    self.root = root
-    keyStack = []
-    tree = root
+  init(rootTree: Any) {
+    self.rootTree = rootTree
+    subTreePath = []
+    subTree = rootTree
   }
 
-  private func restructTree() {
-    var tree = root
-    for key in keyStack {
+  private func restructSubTree() {
+    var tree = rootTree
+    for key in subTreePath {
       if getPlistValueType(tree) == .dictionary {
         tree = (tree as! NSDictionary)[key as! String]
         continue
@@ -22,28 +22,28 @@ class Plist {
         tree = (tree as! NSArray)[key as! Int]
         continue
       }
-      fputs("Plist.keyStack is invalid", stderr)
+      fputs("Plist.subTreePath is invalid", stderr)
       exit(1)
     }
-    self.tree = tree
+    subTree = tree
   }
 
   func pushKey(_ key: PlistKey) {
-    keyStack.append(key)
-    restructTree()
+    subTreePath.append(key)
+    restructSubTree()
   }
 
   func popKey() {
-    keyStack.removeLast()
-    restructTree()
+    subTreePath.removeLast()
+    restructSubTree()
   }
 
-  func treeKeys()-> [PlistKey] {
-    if treeType == .dictionary {
-      return keys(tree: tree as! NSDictionary)
+  func subTreeKeys()-> [PlistKey] {
+    if subTreeType == .dictionary {
+      return keys(subTree: subTree as! NSDictionary)
     }
-    if treeType == .array {
-      let lastIndex = (tree as! NSArray).count - 1
+    if subTreeType == .array {
+      let lastIndex = (subTree as! NSArray).count - 1
       if lastIndex > 0 {
         return [Int](0...lastIndex)
       }
@@ -51,25 +51,25 @@ class Plist {
     return []
   }
 
-  private func keys(tree: NSDictionary) -> [String] {
+  private func keys(subTree: NSDictionary) -> [String] {
     let dictionaryOrder = { (a: Any, b: Any) -> Bool in
       a as! String > b as! String
     }
     let toString = { (any: Any) -> String in String(describing: any) }
 
-    let keys: [String] = tree.allKeys.map(toString).sorted(by: dictionaryOrder)
+    let keys: [String] = subTree.allKeys.map(toString).sorted(by: dictionaryOrder)
     return keys
   }
 
-  var treeType: PlistValueType {
+  var subTreeType: PlistValueType {
     get {
-      return getPlistValueType(tree)
+      return getPlistValueType(subTree)
     }
   }
 
   var domain: String {
     get {
-      return keyStack[0] as! String
+      return subTreePath[0] as! String
     }
   }
 }
