@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  E2Etest:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+
+    - name: Init
+      run : |
+        cd ${GITHUB_WORKSPACE}
+        make test-init
+
+    - name: Run
+      run : |
+        make test-run
+
