@@ -69,3 +69,8 @@ func getPlistValueType(_ tree: Any) -> PlistValueType {
   }
 }
 
+func plistValueIsParent(_ value: Any) -> Bool {
+  let valueType = getPlistValueType(value)
+  return valueType == .array || valueType == .dict
+}
+
