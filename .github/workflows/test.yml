@@ -13,13 +13,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-
     - name: Init
-      run : |
-        cd ${GITHUB_WORKSPACE}
-        make test-init
+      run : cd ${GITHUB_WORKSPACE}
 
+    - name: Build
+      run : make
+
+    - name: Initialize plist
+      run : make test-init
+        
     - name: Run
-      run : |
-        make test-run
+      run : make test-run
+        
 
