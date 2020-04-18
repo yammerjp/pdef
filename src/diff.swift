@@ -9,7 +9,7 @@ class Diff {
     self.B = B
   }
 
-  func comparePlistOfADomain() {
+  func comparePlist() {
     compareKeys()
   }
 
@@ -60,29 +60,24 @@ class Diff {
   private func printWrite() {
     print("write \(B.domain) \(B.keyStack.string()) \(String(describing: B.tree))")
   }
+  private func printReWrite() {
+    printDelete()
+    printWrite()
+  }
 
   private func compareValue() {
     guard let commonType = self.commonType() else {
-      print("Not same type")
+      printReWrite()
       return
     }
-
-    if commonType == .dictionary {
+    if commonType == .dictionary || commonType == .array {
       compareKeys()
       return
     }
-
-    if commonType == .array {
-      compareKeys()
-      return
-    }
-
     if String(describing: A.tree) == String(describing: B.tree) {
       return
     }
-
-    printDelete()
-    printWrite()
+    printReWrite()
   }
 
   private func commonType() -> PlistValueType? {

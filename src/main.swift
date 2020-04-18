@@ -12,6 +12,6 @@ let plistA = Plist(root: plistRootA)
 let plistB = Plist(root: plistRootB)
 
 let diff = Diff(A: plistA, B: plistB)
-diff.comparePlistOfADomain()
+diff.comparePlist()
 
 removeTmpDirectory()

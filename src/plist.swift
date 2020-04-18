@@ -39,7 +39,6 @@ class Plist {
   }
 
   func treeKeys()-> [PlistKey] {
-    let tree = self.tree
     if treeType == .dictionary {
       return keys(tree: tree as! NSDictionary)
     }
