@@ -3,19 +3,31 @@ import Foundation
 class ShellScriptCreator {
   static func add(treePath: [PlistKey], tree: Any) {
     // print("add is called. path: \(treePath.string(separator: ".")) value: \(tree)")
-    if treePath.count != 2 {
-      print("# treePath.count != 2. skip")
+    if treePath.count < 2 {
+      print("# treePath.count < 2. skip")
       return
     }
-    if plistValueIsParent(tree) && !InnerTree.allValueIsString(tree: tree) {
-      print("# value is deep tree. skip")
+    if treePath.count == 2 {
+      if plistValueIsParent(tree) && !InnerTree.allValueIsString(tree: tree) {
+        print("# value is deep tree. skip")
+        return
+      }
+      let domain = treePath[0] as! String
+      let key = treePath[1] as! String
+      let typeOption = "\(getPlistValueType(tree))"
+      let value = string(value: tree)
+      print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
-    let domain = treePath[0] as! String
-    let key = treePath[1] as! String
-    let typeOption = "\(getPlistValueType(tree))"
-    let value = string(value: tree)
-    print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
+    if treePath.count == 3 && getPlistValueType(tree) == .string {
+      let domain = treePath[0] as! String
+      let key = treePath[1] as! String
+      let typeOption = treePath[2] is Int ? "array-add" : "dict-add \"\(treePath[2] as! String)\""
+      let value = string(value: tree)
+      print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
+      return
+    }
+    print("# treePath.count >= 3. skip")
   }
 
   static func delete(treePath: [PlistKey]) {
