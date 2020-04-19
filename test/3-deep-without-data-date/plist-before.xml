@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>defaults.sh-0-ascii</key>
+	<string>helloworld</string>
+	<key>defaults.sh-1-emoji</key>
+	<string>😀😁😂</string>
+	<key>defaults.sh-2-data</key>
+	<data>
+	ASNFZ4mrze8=
+	</data>
+	<key>defaults.sh-3-integer</key>
+	<integer>123</integer>
+	<key>defaults.sh-4-data</key>
+	<real>0.5</real>
+	<key>defaults.sh-5-bool</key>
+	<true/>
+	<key>defaults.sh-6-date</key>
+	<date>2019-09-16T05:45:42Z</date>
+	<key>defaults.sh-7-array</key>
+	<array>
+		<string>str</string>
+		<string>str</string>
+		<string>0</string>
+		<string>1</string>
+		<string>5.3</string>
+		<string>addstring</string>
+	</array>
+	<key>defaults.sh-8-dict</key>
+	<dict>
+		<key>key0</key>
+		<string>value</string>
+		<key>key1</key>
+		<string>0</string>
+		<key>key2</key>
+		<string>2019-09-16 05:45:42 +0000</string>
+		<key>key3</key>
+		<string>true</string>
+		<key>key4</key>
+		<string>string</string>
+	</dict>
+</dict>
+</plist>

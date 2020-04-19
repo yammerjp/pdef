@@ -2,8 +2,6 @@
 
 domain="$1"
 
-defaults delete "$domain" > /dev/null 2>&1
-
 defaults write net.basd4g.debug "defaults.sh-0-ascii" -string "helloworld"
 defaults write net.basd4g.debug "defaults.sh-1-emoji" -string "😀😁😂"
 defaults write net.basd4g.debug "defaults.sh-2-data" -data 0123456789abcdef
