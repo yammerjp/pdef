@@ -16,7 +16,7 @@ function dump() {
 echo "Info: Run test '$test_name'"
 
 echo "Info: Initialize plist of '$domain'"
-defaults delete "$domain" > /dev/null 2>&1
+defaults delete "$domain" > /dev/null 2>&1 && :
 sh "test/$test_name/init.sh" "$domain"
 
 dump 1.xml
