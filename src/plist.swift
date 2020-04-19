@@ -1,6 +1,6 @@
 import Foundation
 
-class Plist {
+class DomainPlsit {
   let rootTree: Any
   private(set) var subTreePath: [PlistKey]
   private(set) var subTree: Any

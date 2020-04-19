@@ -1,10 +1,10 @@
 import Foundation
 
 class Diff {
-  let A: Plist
-  let B: Plist
+  let A: DomainPlsit
+  let B: DomainPlsit
 
-  init(A: Plist, B: Plist) {
+  init(A: DomainPlsit, B: DomainPlsit) {
     self.A = A
     self.B = B
   }

@@ -1,13 +1,13 @@
 import Foundation
 
-enum PlistFormat: Int {
+enum DomainPlsitFormat: Int {
   case xml
   case ascii
 }
 
 fileprivate let tmpDir = "/tmp/patch-defaults"
 
-func loadFile(path: String, format: PlistFormat) -> NSDictionary {
+func loadFile(path: String, format: DomainPlsitFormat) -> NSDictionary {
   var loadindPlistPath: String = ""
 
   if format == .ascii {
