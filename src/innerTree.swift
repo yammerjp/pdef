@@ -44,7 +44,7 @@ class InnerTree {
     var tree = rootTree
     for key in path {
       if getPlistValueType(tree) == .dict {
-        tree = (tree as! NSDictionary)[key as! String]
+        tree = (tree as! NSDictionary)[key as! String]!
         continue
       }
       if getPlistValueType(tree) == .array {
