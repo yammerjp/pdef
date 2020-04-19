@@ -1,8 +1,16 @@
 import Foundation
 
 class DomainPlsit {
-  let rootPlist: Plist
+  private let rootPlist: Plist
   private(set) var descendant: Descendant
+
+  var domain: String {
+    return descendant.path[0] as! String
+  }
+
+  var key: String {
+    return descendant.path[1] as! String
+  }
 
   init(rootTree: NSDictionary) {
     rootPlist = Plist(tree: rootTree)
@@ -24,13 +32,5 @@ class DomainPlsit {
   func popDescendantPlistPath() {
     descendant.path.removeLast()
     descendant.plist = rootPlist.descendantPlist(path: descendant.path)
-  }
-
-  var domain: String {
-    return descendant.path[0] as! String
-  }
-
-  var key: String {
-    return descendant.path[1] as! String
   }
 }

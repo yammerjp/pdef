@@ -17,7 +17,7 @@ struct Descendant {
 }
 
 class Plist {
-  var tree: Any
+  let tree: Any
   init(tree: Any) {
     self.tree = tree
   }
@@ -48,7 +48,7 @@ class Plist {
     return [Int](0 ... lastIndex)
   }
 
-  func childsIsString() -> Bool {
+  func childsAreString() -> Bool {
     let keys = self.keys()
     if keys.count == 0 {
       return false
@@ -81,7 +81,7 @@ class Plist {
   }
 
   func babys(path: [PlistKey]) -> [Descendant] {
-    if !isParent() {
+    if !isParent {
       return [Descendant(path: path, plist: self)]
     }
     return keys().map { key -> [Descendant] in
@@ -91,7 +91,7 @@ class Plist {
 
   func containsArray(path: [PlistKey]) -> [[PlistKey]]? {
     var keysArray: [[PlistKey]] = []
-    if !isParent() {
+    if !isParent {
       return nil
     }
     if type == .array {
@@ -105,7 +105,7 @@ class Plist {
     return keysArray
   }
 
-  func isParent() -> Bool {
+  var isParent: Bool {
     return type == .array || type == .dict
   }
 

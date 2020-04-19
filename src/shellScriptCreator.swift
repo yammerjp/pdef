@@ -28,7 +28,7 @@ class ShellScriptCreator {
   }
 
   func add() {
-    if descendant.path.count == 2, !descendant.plist.isParent() || descendant.plist.childsIsString() {
+    if descendant.path.count == 2, !descendant.plist.isParent || descendant.plist.childsAreString() {
       defaultsWrite(typeOption: descendant.plist.type == .real ? "float" : "\(descendant.plist.type)")
       return
     }
@@ -104,18 +104,17 @@ fileprivate extension Array where Element == PlistKey {
 
 fileprivate extension Plist {
   func string(date: DateFormat) -> String {
-    let value = tree
     switch type {
     case .string:
-      return "\"\(value as! String)\""
+      return "\"\(tree as! String)\""
     case .integer:
-      return "\(value as! Int)"
+      return "\(tree as! Int)"
     case .real:
-      return "\(value as! Float)"
+      return "\(tree as! Float)"
     case .bool:
-      return value as! Bool ? "true" : "false"
+      return tree as! Bool ? "true" : "false"
     case .data:
-      return (value as! Data).hexEncodedString()
+      return (tree as! Data).hexEncodedString()
     case .date:
       if date == .iso8601 {
         return ISO8601DateFormatter().string(from: tree as! Date)
@@ -132,7 +131,7 @@ fileprivate extension Plist {
   }
 }
 
-extension Data {
+fileprivate extension Data {
   struct HexEncodingOptions: OptionSet {
     let rawValue: Int
     static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
