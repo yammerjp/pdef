@@ -1,5 +1,10 @@
 import Foundation
 
+struct HeadValue {
+  var path: [PlistKey]
+  var value: Any
+}
+
 class InnerTree {
   static func keys(tree: Any) -> [PlistKey] {
     let treeType = getPlistValueType(tree)
@@ -55,5 +60,32 @@ class InnerTree {
       exit(1)
     }
     return tree
+  }
+
+  static func headValues(path: [PlistKey], tree: Any)-> [HeadValue] {
+    if !plistValueIsParent(tree) {
+      return [ HeadValue(path: path, value: tree) ]
+    }
+    return keys(tree: tree).map({ key -> [HeadValue] in
+      return headValues(path: path+[key], tree: subTree(path: [key], rootTree: tree))
+    }).flatMap{$0}
+  }
+
+  static func containsArray(path: [PlistKey], tree: Any) -> [[PlistKey]]? {
+    var keysArray: [[PlistKey]] = []
+    if !plistValueIsParent(tree) {
+      return nil
+    }
+    if getPlistValueType(tree) == .array {
+    
+      keysArray += [path]
+    }
+    let keys = self.keys(tree: tree)
+    for key in keys {
+      if let newPathes = containsArray(path: path + [key], tree: subTree(path: [key],rootTree: tree)) {
+        keysArray += newPathes
+      }
+    }
+    return keysArray
   }
 }
