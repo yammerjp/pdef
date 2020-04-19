@@ -5,139 +5,141 @@ enum DateFormat: Int {
   case iso8601
 }
 
+enum PlistBuddyCommand: String {
+  case Add
+  case Delete
+}
+
 class ShellScriptCreator {
-  static func add(treePath: [PlistKey], tree: Plist) {
-    // print("add is called. path: \(treePath.string(separator: ".")) value: \(tree)")
-    if treePath.count < 2 {
-      fputs("# treePath.count < 2. skip", stderr)
-      exit(1)
+  let descendant: Descendant
+  init(_ descendant: Descendant) {
+    self.descendant = descendant
+    if descendant.path.count < 2 {
+      ErrorMessage("# treePath.count < 2. skip")
     }
-    if treePath.count == 2 && ( !tree.plistValueIsParent() || tree.allValueIsString() ) {
-      let domain = treePath[0] as! String
-      let key = treePath[1] as! String
-      let typeOption = tree.type == .real ? "float" : "\(tree.type)"
-      let value = tree.string(date: .iso8601)
-      print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
-      return
-    }
-    if treePath.count == 3 && tree.type == .string {
-      let domain = treePath[0] as! String
-      let key = treePath[1] as! String
-      let typeOption = treePath[2] is Int ? "array-add" : "dict-add \"\(treePath[2] as! String)\""
-      let value = tree.string(date: .iso8601)
-      print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
-      return
-    }
-    let domain = treePath[0] as! String
-    let keyPath = treePath.dropFirst().map{$0}
-    let headValues = tree.headValues(path: keyPath)
-
-    let tmpFile = "tmp"
-    print("defaults export \(domain) \(tmpFile)")
-
-    // add array
-    if let arrayKeyPathes = tree.containsArray(path: keyPath) {
-      for arrayKeyPath in arrayKeyPathes {
-        let arrayKeyPathString = plistBuddyPath(keys: arrayKeyPath).string(separator: ":")
-        print("/usr/libexec/PlistBuddy -c 'Add \(arrayKeyPathString) array ' \(tmpFile)")
-      }
-    }
-
-    for headValue in headValues {
-      let keyPath = plistBuddyPath(keys: headValue.path).string(separator: ":")
-      let valueType = headValue.value.type
-      let typeString = "\(valueType)"
-      if valueType == .date || valueType == .data {
-        fputs("# Not support that deep value type is data or date", stderr)
-        exit(1)
-      }
-      let value = headValue.value.string(date: .iso8601)
-      print("/usr/libexec/PlistBuddy -c 'Add \(keyPath) \(typeString) \(value)' \(tmpFile)")
-    }
-
-    print("defaults import \(domain) \(tmpFile)")
-    print("rm \(tmpFile)")
   }
 
-  static func delete(treePath: [PlistKey]) {
-    if treePath.count < 2 {
-      fputs("# treePath.count < 2. skip", stderr)
-      exit(1)
+  var domain: String {
+    return descendant.path[0] as! String
+  }
+
+  var key: String {
+    return descendant.path[1] as! String
+  }
+
+  func add() {
+    if descendant.path.count == 2, !descendant.plist.isParent() || descendant.plist.childsIsString() {
+      defaultsWrite(typeOption: descendant.plist.type == .real ? "float" : "\(descendant.plist.type)")
+      return
     }
-    if treePath.count == 2 {
-      let domain = treePath[0] as! String
-      let key = treePath[1] as! String
+    if descendant.path.count == 3, descendant.plist.type == .string {
+      defaultsWrite(typeOption: descendant.path[2] is Int ? "array-add" : "dict-add \"\(descendant.path[2] as! String)\"")
+      return
+    }
+
+    exportAndImport { tmpFile in
+      if let arrayKeyPathes = descendant.plist.containsArray(path: descendant.path) {
+        for arrayKeyPath in arrayKeyPathes {
+          plistBuddy(command: .Add, path: arrayKeyPath, typeAndValue: "array", tmpFile: tmpFile)
+        }
+      }
+      for baby in descendant.plist.babys(path: descendant.path) {
+        if baby.plist.type == .date || baby.plist.type == .data {
+          ErrorMessage("# Not support that deep value type is data or date")
+        }
+        let value = baby.plist.string(date: .iso8601)
+        plistBuddy(command: .Add, path: baby.path, typeAndValue: "\(baby.plist.type) \(value)", tmpFile: tmpFile)
+      }
+    }
+  }
+
+  func delete() {
+    if descendant.path.count == 2 {
       print("defaults delete \(domain) \"\(key)\"")
       return
     }
-    let domain = treePath[0] as! String
-    let tmpFile = "tmp"
-    let keyPath = plistBuddyPath(keys: treePath.dropFirst().map{$0}).string(separator: ":")
+    exportAndImport { tmpFile in
+      plistBuddy(command: .Delete, path: descendant.path, typeAndValue: "", tmpFile: tmpFile)
+    }
+  }
 
+  func update() {
+    print("# update is called. path: \(descendant.path.string(separator: ".")) value: \(descendant.plist)")
+  }
+
+  private func defaultsWrite(typeOption: String) {
+    let valueString = descendant.plist.string(date: .iso8601)
+    print("defaults write \(domain) \"\(key)\" -\(typeOption) \(valueString)")
+  }
+
+  private func exportAndImport(_ plistBuddys: (_ tmpFile: String) -> Void) {
+    let tmpFile = "tmp"
     print("defaults export \(domain) \(tmpFile)")
-    print("/usr/libexec/PlistBuddy -c \"Delete \(keyPath)\" \(tmpFile)")
+    plistBuddys(tmpFile)
     print("defaults import \(domain) \(tmpFile)")
     print("rm \(tmpFile)")
   }
 
-  private static func plistBuddyPath(keys: [PlistKey]) -> [PlistKey] {
-    let escapedKeys = keys.map{key -> PlistKey in
+  private func plistBuddy(command: PlistBuddyCommand, path: [PlistKey], typeAndValue: String, tmpFile: String) {
+    let pathString = path.dropFirst().map { $0 }.plistBuddyPath()
+    print("/usr/libexec/PlistBuddy -c '\(command) \(pathString) \(typeAndValue)' \(tmpFile)")
+  }
+}
+
+fileprivate extension Array where Element == PlistKey {
+  func plistBuddyPath() -> String {
+    let escapedKeys = map { key -> PlistKey in
       if key is Int {
         return key
       }
       let keyString = key as! String
       if keyString.contains("\"") || keyString.contains("'") {
-        fputs("# Plist key include quote or double quote. Not support to Escape quote or double quote", stderr)
-        exit(1)
+        ErrorMessage("# Plist key include quote or double quote. Not support to Escape quote or double quote")
       }
       return "\"\(keyString)\""
     }
-    return escapedKeys
-  }
-
-  static func update(treePath: [PlistKey], tree: Plist) {
-    print("# update is called. path: \(treePath.string(separator: ".")) value: \(tree)")
+    return escapedKeys.string(separator: ":")
   }
 }
-
 
 fileprivate extension Plist {
   func string(date: DateFormat) -> String {
     let value = tree
     switch type {
-      case .string:
-        return "\"\(value as! String)\""
-      case .integer:
-        return "\(value as! Int)"
-      case .real:
-        return "\(value as! Float)"
-      case .bool:
-        return value as! Bool ? "true" : "false"
-      case .data:
-        return (value as! Data).hexEncodedString()
-      case .date:
-        if date == .iso8601 {
-          return ISO8601DateFormatter().string(from: tree as! Date)
-        }
-        return DateFormatter().string(from: tree as! Date)
-      case .array:
-        return "\"" + (tree as! [String]).joined(separator: "\" \"") + "\""
-      case .dict:
-        return keys().map { key -> String in
-          let value = subTree(path:[key]).tree as! String
-          return "\"\(key as! String)\" \"\(value)\""
-        }.joined(separator: " ")
+    case .string:
+      return "\"\(value as! String)\""
+    case .integer:
+      return "\(value as! Int)"
+    case .real:
+      return "\(value as! Float)"
+    case .bool:
+      return value as! Bool ? "true" : "false"
+    case .data:
+      return (value as! Data).hexEncodedString()
+    case .date:
+      if date == .iso8601 {
+        return ISO8601DateFormatter().string(from: tree as! Date)
+      }
+      return DateFormatter().string(from: tree as! Date)
+    case .array:
+      return "\"" + (tree as! [String]).joined(separator: "\" \"") + "\""
+    case .dict:
+      return keys().map { key -> String in
+        let value = childPlist(key: key).tree as! String
+        return "\"\(key as! String)\" \"\(value)\""
+      }.joined(separator: " ")
     }
   }
 }
 
 extension Data {
-    struct HexEncodingOptions: OptionSet {
-        let rawValue: Int
-        static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
-    }
-    func hexEncodedString(options: HexEncodingOptions = []) -> String {
-        let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
-        return map { String(format: format, $0) }.joined()
-    }
+  struct HexEncodingOptions: OptionSet {
+    let rawValue: Int
+    static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
+  }
+
+  func hexEncodedString(options: HexEncodingOptions = []) -> String {
+    let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
+    return map { String(format: format, $0) }.joined()
+  }
 }

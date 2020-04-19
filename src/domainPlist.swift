@@ -1,54 +1,36 @@
 import Foundation
 
 class DomainPlsit {
-  let rootTree: Plist
-  private(set) var subTreePath: [PlistKey]
-  private(set) var subTree: Plist
+  let rootPlist: Plist
+  private(set) var descendant: Descendant
 
-  init(rootTree: Any) {
-    self.rootTree = Plist(tree: rootTree)
-    subTreePath = []
-    subTree = self.rootTree
+  init(rootTree: NSDictionary) {
+    rootPlist = Plist(tree: rootTree)
+    descendant = Descendant(path: [], plist: rootPlist)
   }
 
   convenience init(domainTree: Any, domain: String) {
     let rootTree: NSDictionary = [
-      domain : domainTree
+      domain: domainTree,
     ]
     self.init(rootTree: rootTree)
   }
 
-  private func restructSubTree() {
-    subTree = tree(path: subTreePath)
+  func pushDescendantPlistPath(key: PlistKey) {
+    descendant.path.append(key)
+    descendant.plist = descendant.plist.childPlist(key: key)
   }
 
-  func tree(path: [PlistKey])-> Plist {
-    return rootTree.subTree(path: path)
-  }
-
-  func pushSubTreePath(key: PlistKey) {
-    subTreePath.append(key)
-    restructSubTree()
-  }
-
-  func popSubTreePath() {
-    subTreePath.removeLast()
-    restructSubTree()
-  }
-
-  func subTreeKeys()-> [PlistKey] {
-    subTree.keys()
-  }
-
-  var subTreeType: PlistType {
-    get {
-      return subTree.type
-    }
+  func popDescendantPlistPath() {
+    descendant.path.removeLast()
+    descendant.plist = rootPlist.descendantPlist(path: descendant.path)
   }
 
   var domain: String {
-    get {
-      return subTreePath[0] as! String
-    }
+    return descendant.path[0] as! String
+  }
+
+  var key: String {
+    return descendant.path[1] as! String
   }
 }

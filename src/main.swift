@@ -3,8 +3,7 @@ import Foundation
 createTmpDirectory()
 
 if CommandLine.arguments.count < 4 {
-  fputs("Missing Arguments", stderr)
-  exit(1)
+  ErrorMessage("Missing Arguments")
 }
 
 let format: DomainPlsitFormat = .xml

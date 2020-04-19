@@ -11,9 +11,9 @@ enum PlistType: Int {
   case dict
 }
 
-struct HeadValue {
+struct Descendant {
   var path: [PlistKey]
-  var value: Plist
+  var plist: Plist
 }
 
 class Plist {
@@ -23,96 +23,93 @@ class Plist {
   }
 
   func keys() -> [PlistKey] {
-    let treeType = type
-    if treeType == .dict {
+    if type == .dict {
       return dictionaryKeys()
     }
-    if treeType == .array {
+    if type == .array {
       return arrayKeys()
     }
     return []
   }
 
   private func dictionaryKeys() -> [String] {
-    let tree = self.tree as! NSDictionary
     let dictionaryOrder = { (a: Any, b: Any) -> Bool in
       !(a as! String > b as! String)
     }
     let toString = { (any: Any) -> String in String(describing: any) }
-    let keys: [String] = tree.allKeys.map(toString).sorted(by: dictionaryOrder)
-    return keys
+    return (tree as! NSDictionary).allKeys.map(toString).sorted(by: dictionaryOrder)
   }
 
   private func arrayKeys() -> [Int] {
-    let tree = self.tree as! NSArray
-    let lastIndex = tree.count - 1
+    let lastIndex = (tree as! NSArray).count - 1
     if lastIndex <= 0 {
       return []
     }
     return [Int](0 ... lastIndex)
   }
 
-  func allValueIsString() -> Bool {
+  func childsIsString() -> Bool {
     let keys = self.keys()
     if keys.count == 0 {
       return false
     }
     for key in keys {
-      if subTree(path: [key]).type != .string {
+      if childPlist(key: key).type != .string {
         return false
       }
     }
     return true
   }
 
-  func subTree(path: [PlistKey])-> Plist{
-    var tree = self.tree
-    for key in path {
-      if getPlistTreeType(tree: tree) == .dict {
-        tree = (tree as! NSDictionary)[key as! String]!
-        continue
-      }
-      if getPlistTreeType(tree: tree) == .array {
-        tree = (tree as! NSArray)[key as! Int]
-        continue
-      }
-      fputs("TreePath '\(path.string())' is invalid", stderr)
-      exit(1)
+  func childPlist(key: PlistKey) -> Plist {
+    if type == .dict {
+      return Plist(tree: (tree as! NSDictionary)[key as! String]!)
     }
-    return Plist(tree: tree)
+    if type == .array {
+      return Plist(tree: (tree as! NSArray)[key as! Int])
+    }
+    ErrorMessage("Failed to create chilid plist")
+    exit(1)
   }
 
-  func headValues(path: [PlistKey])-> [HeadValue] {
-    if !plistValueIsParent() {
-      return [ HeadValue(path: path, value: self) ]
+  func descendantPlist(path: [PlistKey]) -> Plist {
+    var plist = self
+    for key in path {
+      plist = plist.childPlist(key: key)
     }
-    return keys().map({ key -> [HeadValue] in
-      return subTree(path: [key]).headValues(path: path+[key])
-    }).flatMap{$0}
+    return plist
+  }
+
+  func babys(path: [PlistKey]) -> [Descendant] {
+    if !isParent() {
+      return [Descendant(path: path, plist: self)]
+    }
+    return keys().map { key -> [Descendant] in
+      childPlist(key: key).babys(path: path + [key])
+    }.flatMap { $0 }
   }
 
   func containsArray(path: [PlistKey]) -> [[PlistKey]]? {
     var keysArray: [[PlistKey]] = []
-    if !plistValueIsParent() {
+    if !isParent() {
       return nil
     }
     if type == .array {
       keysArray += [path]
     }
     for key in keys() {
-      if let newPathes = subTree(path: [key]).containsArray(path: path + [key]) {
+      if let newPathes = childPlist(key: key).containsArray(path: path + [key]) {
         keysArray += newPathes
       }
     }
     return keysArray
   }
 
-  var type: PlistType {
-    get {
-      return getPlistTreeType(tree: tree)
-    }
+  func isParent() -> Bool {
+    return type == .array || type == .dict
   }
-  private func getPlistTreeType(tree: Any) -> PlistType {
+
+  var type: PlistType {
     let typeID = CFGetTypeID(tree as CFTypeRef?)
     switch typeID {
     case CFNumberGetTypeID():
@@ -133,14 +130,7 @@ class Plist {
     case CFBooleanGetTypeID():
       return .bool
     default:
-      fputs("Detecting plist type is failed", stderr)
       exit(1)
     }
   }
-
-  func plistValueIsParent() -> Bool {
-    let valueType = type
-    return valueType == .array || valueType == .dict
-  }
-
 }

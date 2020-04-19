@@ -14,9 +14,8 @@ class Diff {
   }
 
   private func compareKeys() {
-    // print("called diffKey()")
-    let keysA: [PlistKey] = A.subTreeKeys()
-    let keysB: [PlistKey] = B.subTreeKeys()
+    let keysA = A.descendant.plist.keys()
+    let keysB = B.descendant.plist.keys()
     let keysAll = keysA.joinNotContains(keysB)
 
     for key in keysAll {
@@ -34,43 +33,43 @@ class Diff {
   }
 
   private func compareValueOfSameKey(key: PlistKey) {
-    A.pushSubTreePath(key: key)
-    B.pushSubTreePath(key: key)
+    A.pushDescendantPlistPath(key: key)
+    B.pushDescendantPlistPath(key: key)
     compareValue()
-    A.popSubTreePath()
-    B.popSubTreePath()
+    A.popDescendantPlistPath()
+    B.popDescendantPlistPath()
   }
 
   private func containsOnlyA(key: PlistKey) {
-    A.pushSubTreePath(key: key)
-    ShellScriptCreator.delete(treePath:A.subTreePath)
-    A.popSubTreePath()
+    A.pushDescendantPlistPath(key: key)
+    ShellScriptCreator(A.descendant).delete()
+    A.popDescendantPlistPath()
   }
 
   private func containsOnlyB(key: PlistKey) {
-    B.pushSubTreePath(key: key)
-    ShellScriptCreator.add(treePath:B.subTreePath, tree: B.subTree)
-    B.popSubTreePath()
+    B.pushDescendantPlistPath(key: key)
+    ShellScriptCreator(B.descendant).add()
+    B.popDescendantPlistPath()
   }
 
   private func compareValue() {
-    guard let commonType = self.commonType() else {
-      ShellScriptCreator.update(treePath:B.subTreePath, tree: B.subTree)
+    guard let commonType = self.commonType else {
+      ShellScriptCreator(B.descendant).update()
       return
     }
     if commonType == .dict || commonType == .array {
       compareKeys()
       return
     }
-    if String(describing: A.subTree) == String(describing: B.subTree) {
+    if String(describing: A.descendant.plist) == String(describing: B.descendant.plist) {
       return
     }
-    ShellScriptCreator.update(treePath:B.subTreePath, tree: B.subTree)
+    ShellScriptCreator(B.descendant).update()
   }
 
-  private func commonType() -> PlistType? {
-    if A.subTreeType == B.subTreeType {
-      return A.subTreeType
+  private var commonType: PlistType? {
+    if A.descendant.plist.type == B.descendant.plist.type {
+      return A.descendant.plist.type
     }
     return nil
   }

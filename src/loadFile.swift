@@ -54,8 +54,7 @@ fileprivate func loadInvalidSyntaxPlist(path: String) -> String {
   do {
     text = try String(contentsOf: importURL, encoding: String.Encoding.utf8)
   } catch {
-    fputs("Failed to load file '\(path)'", stderr)
-    exit(1)
+    ErrorMessage("Failed to load file '\(path)'")
   }
   return text
 }
@@ -64,21 +63,23 @@ fileprivate extension String {
   func unEscapeBackSlash() -> String {
     let twoSlash = "([^\\\\])\\\\\\\\([^\\\\])"
     let oneSlash = "$1\\\\$2"
-    return self.replacingOccurrences(
+    return replacingOccurrences(
       of: twoSlash,
       with: oneSlash,
       options: .regularExpression,
-      range: self.range(of: self))
+      range: range(of: self)
+    )
   }
 
   func replaceBinary2Dummy() -> String {
     let regexOfInvalidSyntax = "\\{length = [0-9]+, bytes = ([0-9]| |\\.|x|[a-f])+\\}"
     let replacingString = "\"This String is replaced by patch-defaults. Original plist file (old-style-ascii) contains a binary data with invalid syntax\""
-    return self.replacingOccurrences(
+    return replacingOccurrences(
       of: regexOfInvalidSyntax,
       with: replacingString,
       options: .regularExpression,
-      range: self.range(of: self))
+      range: range(of: self)
+    )
   }
 }
 
@@ -86,8 +87,7 @@ fileprivate func mkdir(path: String) {
   do {
     try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
   } catch {
-    fputs("Failed to make directory '\(path)'", stderr)
-    exit(1)
+    ErrorMessage("Failed to make directory '\(path)'")
   }
 }
 
@@ -95,8 +95,7 @@ fileprivate func rmdir(path: String) {
   do {
     try FileManager.default.removeItem(atPath: path)
   } catch {
-    fputs("Failed to remove directory '\(path)'", stderr)
-    exit(1)
+    ErrorMessage("Failed to remove directory '\(path)'")
   }
 }
 
@@ -104,14 +103,13 @@ fileprivate func writeValidSyntaxText2File(path: String, text: String) {
   do {
     try text.write(toFile: path, atomically: true, encoding: String.Encoding.utf8)
   } catch {
-    fputs("Failed to write file '\(path)'", stderr)
-    exit(1)
+    ErrorMessage("Failed to write file '\(path)'")
   }
 }
 
 fileprivate func loadValidSyntaxPlist(path: String) -> NSDictionary {
   guard let plist = NSDictionary(contentsOfFile: path) else {
-    fputs("Failed to load property list '\(path)'", stderr)
+    ErrorMessage("Failed to load property list '\(path)'")
     exit(1)
   }
   return plist
