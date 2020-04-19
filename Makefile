@@ -4,6 +4,6 @@ all :
 clean :
 	rm -r bin
 test-run :
-	./test/run.sh 1
-	./test/run.sh 2
+	./test/run.sh 1-shallow
+	./test/run.sh 2-array-dict-add
   
