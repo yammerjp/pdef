@@ -12,15 +12,11 @@ class ShellScriptCreator {
       fputs("# treePath.count < 2. skip", stderr)
       exit(1)
     }
-    if treePath.count == 2 {
-      if tree.plistValueIsParent() && !tree.allValueIsString() {
-        print("# value is deep tree. skip")
-        return
-      }
+    if treePath.count == 2 && ( !tree.plistValueIsParent() || tree.allValueIsString() ) {
       let domain = treePath[0] as! String
       let key = treePath[1] as! String
       let typeOption = tree.type == .real ? "float" : "\(tree.type)"
-      let value = string(plist: tree, date: .iso8601)
+      let value = tree.string(date: .iso8601)
       print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
@@ -28,7 +24,7 @@ class ShellScriptCreator {
       let domain = treePath[0] as! String
       let key = treePath[1] as! String
       let typeOption = treePath[2] is Int ? "array-add" : "dict-add \"\(treePath[2] as! String)\""
-      let value = string(plist: tree, date: .iso8601)
+      let value = tree.string(date: .iso8601)
       print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
@@ -55,7 +51,7 @@ class ShellScriptCreator {
         fputs("# Not support that deep value type is data or date", stderr)
         exit(1)
       }
-      let value = string(plist: headValue.value, date: .iso8601)
+      let value = headValue.value.string(date: .iso8601)
       print("/usr/libexec/PlistBuddy -c 'Add \(keyPath) \(typeString) \(value)' \(tmpFile)")
     }
 
@@ -102,10 +98,13 @@ class ShellScriptCreator {
   static func update(treePath: [PlistKey], tree: Plist) {
     print("# update is called. path: \(treePath.string(separator: ".")) value: \(tree)")
   }
+}
 
-  static func string(plist: Plist, date: DateFormat) -> String {
-    let value = plist.tree
-    switch plist.type {
+
+fileprivate extension Plist {
+  func string(date: DateFormat) -> String {
+    let value = tree
+    switch type {
       case .string:
         return "\"\(value as! String)\""
       case .integer:
@@ -118,15 +117,14 @@ class ShellScriptCreator {
         return (value as! Data).hexEncodedString()
       case .date:
         if date == .iso8601 {
-          return ISO8601DateFormatter().string(from: value as! Date)
+          return ISO8601DateFormatter().string(from: tree as! Date)
         }
-        return DateFormatter().string(from: value as! Date)
+        return DateFormatter().string(from: tree as! Date)
       case .array:
-        return "\"" + (value as! [String]).joined(separator: "\" \"") + "\""
+        return "\"" + (tree as! [String]).joined(separator: "\" \"") + "\""
       case .dict:
-        let keys = plist.keys()
-        return keys.map { key -> String in
-          let value = plist.subTree(path:[key]).tree as! String
+        return keys().map { key -> String in
+          let value = subTree(path:[key]).tree as! String
           return "\"\(key as! String)\" \"\(value)\""
         }.joined(separator: " ")
     }
