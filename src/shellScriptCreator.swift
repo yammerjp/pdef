@@ -1,5 +1,10 @@
 import Foundation
 
+enum DateFormat: Int {
+  case long
+  case iso8601
+}
+
 class ShellScriptCreator {
   static func add(treePath: [PlistKey], tree: Any) {
     // print("add is called. path: \(treePath.string(separator: ".")) value: \(tree)")
@@ -15,7 +20,7 @@ class ShellScriptCreator {
       let domain = treePath[0] as! String
       let key = treePath[1] as! String
       let typeOption = "\(getPlistValueType(tree))"
-      let value = string(value: tree)
+      let value = string(value: tree, date: .iso8601)
       print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
@@ -23,11 +28,35 @@ class ShellScriptCreator {
       let domain = treePath[0] as! String
       let key = treePath[1] as! String
       let typeOption = treePath[2] is Int ? "array-add" : "dict-add \"\(treePath[2] as! String)\""
-      let value = string(value: tree)
+      let value = string(value: tree, date: .iso8601)
       print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
-    print("# treePath.count >= 3. skip")
+    let domain = treePath[0] as! String
+    let keyPath = treePath.dropFirst().map{$0}
+    let headValues = InnerTree.headValues(path: keyPath, tree: tree)
+
+    let tmpFile = "tmp"
+    print("defaults export \(domain) \(tmpFile)")
+
+    // add array
+    if let arrayKeyPathes = InnerTree.containsArray(path: keyPath, tree: tree) {
+      for arrayKeyPath in arrayKeyPathes {
+        let arrayKeyPathString = plistBuddyPath(keys: arrayKeyPath).string(separator: ":")
+        print("/usr/libexec/PlistBuddy -c 'Add \(arrayKeyPathString) array ' \(tmpFile)")
+      }
+    }
+
+    for headValue in headValues {
+      let keyPath = plistBuddyPath(keys: headValue.path).string(separator: ":")
+      let typeOption = "\(getPlistValueType(headValue.value))"
+      let type = typeOption == "float" ? "real" : typeOption
+      let value = string(value: headValue.value, date: .iso8601)
+      print("/usr/libexec/PlistBuddy -c 'Add \(keyPath) \(type) \(value)' \(tmpFile)")
+    }
+
+    print("defaults import \(domain) \(tmpFile)")
+    print("rm \(tmpFile)")
   }
 
   static func delete(treePath: [PlistKey]) {
@@ -70,7 +99,7 @@ class ShellScriptCreator {
     print("# update is called. path: \(treePath.string(separator: ".")) value: \(tree)")
   }
 
-  static func string(value: Any) -> String {
+  static func string(value: Any, date: DateFormat) -> String {
     let type = getPlistValueType(value)
     switch type {
       case .string:
@@ -84,7 +113,10 @@ class ShellScriptCreator {
       case .data:
         return (value as! Data).hexEncodedString()
       case .date:
-        return ISO8601DateFormatter().string(from: value as! Date)
+        if date == .iso8601 {
+          return ISO8601DateFormatter().string(from: value as! Date)
+        }
+        return DateFormatter().string(from: value as! Date)
       case .array:
         return "\"" + (value as! [String]).joined(separator: "\" \"") + "\""
       case .dict:
