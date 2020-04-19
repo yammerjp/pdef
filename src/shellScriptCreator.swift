@@ -49,8 +49,12 @@ class ShellScriptCreator {
 
     for headValue in headValues {
       let keyPath = plistBuddyPath(keys: headValue.path).string(separator: ":")
-      let typeOption = "\(getPlistValueType(headValue.value))"
-      let type = typeOption == "float" ? "real" : typeOption
+      let valueType = getPlistValueType(headValue.value)
+      if valueType == .date || valueType == .data {
+        fputs("# Not support that deep value type is data or date", stderr)
+        exit(1)
+      }
+      let type = valueType == .float ? "real" : "\(valueType)"
       let value = string(value: headValue.value, date: .iso8601)
       print("/usr/libexec/PlistBuddy -c 'Add \(keyPath) \(type) \(value)' \(tmpFile)")
     }
