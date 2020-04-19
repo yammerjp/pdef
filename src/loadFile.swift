@@ -5,18 +5,18 @@ enum PlistFormat: Int {
   case ascii
 }
 
-fileprivate let validSyntaxPlistDir = "/tmp/patch-defaults"
+fileprivate let tmpDir = "/tmp/patch-defaults"
 
 func loadFile(path: String, format: PlistFormat) -> NSDictionary {
   var loadindPlistPath: String = ""
 
   if format == .ascii {
-    let validSyntaxPlistPath = "\(validSyntaxPlistDir)/\(nowTime()).txt"
+    let validSyntaxPlistPath = "\(tmpDir)/\(nowTime()).txt"
 
     let text = loadInvalidSyntaxPlist(path: full(path: path))
     let textFixed = text.unEscapeBackSlash().replaceBinary2Dummy()
 
-    mkdir(path: validSyntaxPlistDir)
+    mkdir(path: tmpDir)
     writeValidSyntaxText2File(path: validSyntaxPlistPath, text: textFixed)
     loadindPlistPath = validSyntaxPlistPath
   } else {
@@ -26,8 +26,12 @@ func loadFile(path: String, format: PlistFormat) -> NSDictionary {
   return loadValidSyntaxPlist(path: loadindPlistPath)
 }
 
+func createTmpDirectory() {
+  mkdir(path: tmpDir)
+}
+
 func removeTmpDirectory() {
-  rmdir(path: validSyntaxPlistDir)
+  rmdir(path: tmpDir)
 }
 
 fileprivate func full(path: String) -> String {

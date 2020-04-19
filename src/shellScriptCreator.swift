@@ -3,29 +3,67 @@ import Foundation
 class ShellScriptCreator {
   static func add(treePath: [PlistKey], tree: Any) {
     // print("add is called. path: \(treePath.string(separator: ".")) value: \(tree)")
-    if treePath.count != 2 {
-      print("# treePath.count != 2. skip")
+    if treePath.count < 2 {
+      fputs("# treePath.count < 2. skip", stderr)
+      exit(1)
+    }
+    if treePath.count == 2 {
+      if plistValueIsParent(tree) && !InnerTree.allValueIsString(tree: tree) {
+        print("# value is deep tree. skip")
+        return
+      }
+      let domain = treePath[0] as! String
+      let key = treePath[1] as! String
+      let typeOption = "\(getPlistValueType(tree))"
+      let value = string(value: tree)
+      print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
-    if plistValueIsParent(tree) && !InnerTree.allValueIsString(tree: tree) {
-      print("# value is deep tree. skip")
+    if treePath.count == 3 && getPlistValueType(tree) == .string {
+      let domain = treePath[0] as! String
+      let key = treePath[1] as! String
+      let typeOption = treePath[2] is Int ? "array-add" : "dict-add \"\(treePath[2] as! String)\""
+      let value = string(value: tree)
+      print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
-    let domain = treePath[0] as! String
-    let key = treePath[1] as! String
-    let typeOption = "\(getPlistValueType(tree))"
-    let value = string(value: tree)
-    print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
+    print("# treePath.count >= 3. skip")
   }
 
   static func delete(treePath: [PlistKey]) {
-    if treePath.count != 2 {
-      print("# treePath.count != 2. skip")
+    if treePath.count < 2 {
+      fputs("# treePath.count < 2. skip", stderr)
+      exit(1)
+    }
+    if treePath.count == 2 {
+      let domain = treePath[0] as! String
+      let key = treePath[1] as! String
+      print("defaults delete \(domain) \"\(key)\"")
       return
     }
     let domain = treePath[0] as! String
-    let key = treePath[1] as! String
-    print("defaults delete \(domain) \"\(key)\"")
+    let tmpFile = "tmp"
+    let keyPath = plistBuddyPath(keys: treePath.dropFirst().map{$0}).string(separator: ":")
+
+    print("defaults export \(domain) \(tmpFile)")
+    print("/usr/libexec/PlistBuddy -c \"Delete \(keyPath)\" \(tmpFile)")
+    print("defaults import \(domain) \(tmpFile)")
+    print("rm \(tmpFile)")
+  }
+
+  private static func plistBuddyPath(keys: [PlistKey]) -> [PlistKey] {
+    let escapedKeys = keys.map{key -> PlistKey in
+      if key is Int {
+        return key
+      }
+      let keyString = key as! String
+      if keyString.contains("\"") || keyString.contains("'") {
+        fputs("# Plist key include quote or double quote. Not support to Escape quote or double quote", stderr)
+        exit(1)
+      }
+      return "\"\(keyString)\""
+    }
+    return escapedKeys
   }
 
   static func update(treePath: [PlistKey], tree: Any) {

@@ -1,5 +1,7 @@
 import Foundation
 
+createTmpDirectory()
+
 if CommandLine.arguments.count < 4 {
   fputs("Missing Arguments", stderr)
   exit(1)
@@ -16,6 +18,4 @@ let plistB = Plist(domainTree: domainPlistTreeB, domain: domain)
 let diff = Diff(A: plistA, B: plistB)
 diff.comparePlist()
 
-if format != .xml {
-  removeTmpDirectory()
-}
+removeTmpDirectory()

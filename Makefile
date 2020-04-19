@@ -5,4 +5,5 @@ clean :
 	rm -r bin
 test-run :
 	./test/run.sh 1
+	./test/run.sh 2
   
