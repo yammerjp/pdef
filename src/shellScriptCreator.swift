@@ -28,7 +28,7 @@ class ShellScriptCreator {
       let domain = treePath[0] as! String
       let key = treePath[1] as! String
       let typeOption = treePath[2] is Int ? "array-add" : "dict-add \"\(treePath[2] as! String)\""
-      let value = string(value: tree, date: .long)
+      let value = string(value: tree, date: .iso8601)
       print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
@@ -49,7 +49,8 @@ class ShellScriptCreator {
 
     for headValue in headValues {
       let keyPath = plistBuddyPath(keys: headValue.path).string(separator: ":")
-      let type = "\(getPlistValueType(headValue.value))"
+      let typeOption = "\(getPlistValueType(headValue.value))"
+      let type = typeOption == "float" ? typeOption : "real"
       let value = string(value: headValue.value, date: .long)
       print("/usr/libexec/PlistBuddy -c 'Add \(keyPath) \(type) \(value)' \(tmpFile)")
     }
