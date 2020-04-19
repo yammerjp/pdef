@@ -6,41 +6,41 @@ enum DateFormat: Int {
 }
 
 class ShellScriptCreator {
-  static func add(treePath: [PlistKey], tree: Any) {
+  static func add(treePath: [PlistKey], tree: Plist) {
     // print("add is called. path: \(treePath.string(separator: ".")) value: \(tree)")
     if treePath.count < 2 {
       fputs("# treePath.count < 2. skip", stderr)
       exit(1)
     }
     if treePath.count == 2 {
-      if plistValueIsParent(tree) && !InnerTree.allValueIsString(tree: tree) {
+      if tree.plistValueIsParent() && !tree.allValueIsString() {
         print("# value is deep tree. skip")
         return
       }
       let domain = treePath[0] as! String
       let key = treePath[1] as! String
-      let typeOption = "\(getPlistValueType(tree))"
-      let value = string(value: tree, date: .iso8601)
+      let typeOption = tree.type == .real ? "float" : "\(tree.type)"
+      let value = string(plist: tree, date: .iso8601)
       print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
-    if treePath.count == 3 && getPlistValueType(tree) == .string {
+    if treePath.count == 3 && tree.type == .string {
       let domain = treePath[0] as! String
       let key = treePath[1] as! String
       let typeOption = treePath[2] is Int ? "array-add" : "dict-add \"\(treePath[2] as! String)\""
-      let value = string(value: tree, date: .iso8601)
+      let value = string(plist: tree, date: .iso8601)
       print("defaults write \(domain) \"\(key)\" -\(typeOption) \(value)")
       return
     }
     let domain = treePath[0] as! String
     let keyPath = treePath.dropFirst().map{$0}
-    let headValues = InnerTree.headValues(path: keyPath, tree: tree)
+    let headValues = tree.headValues(path: keyPath)
 
     let tmpFile = "tmp"
     print("defaults export \(domain) \(tmpFile)")
 
     // add array
-    if let arrayKeyPathes = InnerTree.containsArray(path: keyPath, tree: tree) {
+    if let arrayKeyPathes = tree.containsArray(path: keyPath) {
       for arrayKeyPath in arrayKeyPathes {
         let arrayKeyPathString = plistBuddyPath(keys: arrayKeyPath).string(separator: ":")
         print("/usr/libexec/PlistBuddy -c 'Add \(arrayKeyPathString) array ' \(tmpFile)")
@@ -49,14 +49,14 @@ class ShellScriptCreator {
 
     for headValue in headValues {
       let keyPath = plistBuddyPath(keys: headValue.path).string(separator: ":")
-      let valueType = getPlistValueType(headValue.value)
+      let valueType = headValue.value.type
+      let typeString = "\(valueType)"
       if valueType == .date || valueType == .data {
         fputs("# Not support that deep value type is data or date", stderr)
         exit(1)
       }
-      let type = valueType == .float ? "real" : "\(valueType)"
-      let value = string(value: headValue.value, date: .iso8601)
-      print("/usr/libexec/PlistBuddy -c 'Add \(keyPath) \(type) \(value)' \(tmpFile)")
+      let value = string(plist: headValue.value, date: .iso8601)
+      print("/usr/libexec/PlistBuddy -c 'Add \(keyPath) \(typeString) \(value)' \(tmpFile)")
     }
 
     print("defaults import \(domain) \(tmpFile)")
@@ -99,18 +99,18 @@ class ShellScriptCreator {
     return escapedKeys
   }
 
-  static func update(treePath: [PlistKey], tree: Any) {
+  static func update(treePath: [PlistKey], tree: Plist) {
     print("# update is called. path: \(treePath.string(separator: ".")) value: \(tree)")
   }
 
-  static func string(value: Any, date: DateFormat) -> String {
-    let type = getPlistValueType(value)
-    switch type {
+  static func string(plist: Plist, date: DateFormat) -> String {
+    let value = plist.tree
+    switch plist.type {
       case .string:
         return "\"\(value as! String)\""
       case .integer:
         return "\(value as! Int)"
-      case .float:
+      case .real:
         return "\(value as! Float)"
       case .bool:
         return value as! Bool ? "true" : "false"
@@ -124,9 +124,9 @@ class ShellScriptCreator {
       case .array:
         return "\"" + (value as! [String]).joined(separator: "\" \"") + "\""
       case .dict:
-        let keys = InnerTree.keys(tree: value)
+        let keys = plist.keys()
         return keys.map { key -> String in
-          let value = InnerTree.subTree(path:[key], rootTree: value) as! String
+          let value = plist.subTree(path:[key]).tree as! String
           return "\"\(key as! String)\" \"\(value)\""
         }.joined(separator: " ")
     }

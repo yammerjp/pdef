@@ -68,7 +68,7 @@ class Diff {
     ShellScriptCreator.update(treePath:B.subTreePath, tree: B.subTree)
   }
 
-  private func commonType() -> PlistValueType? {
+  private func commonType() -> PlistType? {
     if A.subTreeType == B.subTreeType {
       return A.subTreeType
     }

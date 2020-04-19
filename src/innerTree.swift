@@ -1,13 +1,8 @@
 import Foundation
-
-struct HeadValue {
-  var path: [PlistKey]
-  var value: Any
-}
-
+/*
 class InnerTree {
   static func keys(tree: Any) -> [PlistKey] {
-    let treeType = getPlistValueType(tree)
+    let treeType = getPlistType(tree)
     if treeType == .dict {
       return dictionaryKeys(tree: tree as! NSDictionary)
     }
@@ -38,7 +33,7 @@ class InnerTree {
     let keys = self.keys(tree: tree)
 
     for key in keys {
-      if getPlistValueType(subTree(path: [key], rootTree: tree)) != .string {
+      if getPlistType(subTree(path: [key], rootTree: tree)) != .string {
         return false
       }
     }
@@ -48,11 +43,11 @@ class InnerTree {
   static func subTree(path: [PlistKey], rootTree: Any)-> Any{
     var tree = rootTree
     for key in path {
-      if getPlistValueType(tree) == .dict {
+      if getPlistType(tree) == .dict {
         tree = (tree as! NSDictionary)[key as! String]!
         continue
       }
-      if getPlistValueType(tree) == .array {
+      if getPlistType(tree) == .array {
         tree = (tree as! NSArray)[key as! Int]
         continue
       }
@@ -76,7 +71,7 @@ class InnerTree {
     if !plistValueIsParent(tree) {
       return nil
     }
-    if getPlistValueType(tree) == .array {
+    if getPlistType(tree) == .array {
       keysArray += [path]
     }
     let keys = self.keys(tree: tree)
@@ -88,3 +83,4 @@ class InnerTree {
     return keysArray
   }
 }
+*/
