@@ -4,8 +4,8 @@ class ShellScriptCreator {
   static func add(treePath: [PlistKey], tree: Any) {
     // print("add is called. path: \(treePath.string(separator: ".")) value: \(tree)")
     if treePath.count < 2 {
-      print("# treePath.count < 2. skip")
-      return
+      fputs("# treePath.count < 2. skip", stderr)
+      exit(1)
     }
     if treePath.count == 2 {
       if plistValueIsParent(tree) && !InnerTree.allValueIsString(tree: tree) {
@@ -31,13 +31,39 @@ class ShellScriptCreator {
   }
 
   static func delete(treePath: [PlistKey]) {
-    if treePath.count != 2 {
-      print("# treePath.count != 2. skip")
+    if treePath.count < 2 {
+      fputs("# treePath.count < 2. skip", stderr)
+      exit(1)
+    }
+    if treePath.count == 2 {
+      let domain = treePath[0] as! String
+      let key = treePath[1] as! String
+      print("defaults delete \(domain) \"\(key)\"")
       return
     }
     let domain = treePath[0] as! String
-    let key = treePath[1] as! String
-    print("defaults delete \(domain) \"\(key)\"")
+    let tmpFile = "tmp"
+    let keyPath = plistBuddyPath(keys: treePath.dropFirst().map{$0}).string(separator: ":")
+
+    print("defaults export \(domain) \(tmpFile)")
+    print("/usr/libexec/PlistBuddy -c \"Delete \(keyPath)\" \(tmpFile)")
+    print("defaults import \(domain) \(tmpFile)")
+    print("rm \(tmpFile)")
+  }
+
+  private static func plistBuddyPath(keys: [PlistKey]) -> [PlistKey] {
+    let escapedKeys = keys.map{key -> PlistKey in
+      if key is Int {
+        return key
+      }
+      let keyString = key as! String
+      if keyString.contains("\"") || keyString.contains("'") {
+        fputs("# Plist key include quote or double quote. Not support to Escape quote or double quote", stderr)
+        exit(1)
+      }
+      return "\"\(keyString)\""
+    }
+    return escapedKeys
   }
 
   static func update(treePath: [PlistKey], tree: Any) {
