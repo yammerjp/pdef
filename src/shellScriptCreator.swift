@@ -1,8 +1,8 @@
 import Foundation
 
-enum DateFormat: Int {
+enum StringifyFormat: Int {
   case plistBuddy
-  case iso8601
+  case defaults
 }
 
 enum PlistBuddyCommand: String {
@@ -47,7 +47,7 @@ class ShellScriptCreator {
         if baby.plist.type == .data {
           ErrorMessage("# Not support that deep value type is data")
         }
-        let value = baby.plist.string(date: .plistBuddy)
+        let value = baby.plist.string(format: .plistBuddy)
         plistBuddy(command: .Add, path: baby.path, typeAndValue: "\(baby.plist.type) \(value)", tmpFile: tmpFile)
       }
     }
@@ -68,7 +68,7 @@ class ShellScriptCreator {
   }
 
   private func defaultsWrite(typeOption: String) {
-    let valueString = descendant.plist.string(date: .iso8601)
+    let valueString = descendant.plist.string(format: .defaults)
     print("defaults write \(domain) \"\(key)\" -\(typeOption) \(valueString)")
   }
 
@@ -103,7 +103,7 @@ fileprivate extension Array where Element == PlistKey {
 }
 
 fileprivate extension Plist {
-  func string(date: DateFormat) -> String {
+  func string(format: StringifyFormat) -> String {
     switch type {
     case .string:
       return "\"\(tree as! String)\""
@@ -116,7 +116,7 @@ fileprivate extension Plist {
     case .data:
       return (tree as! Data).hexEncodedString()
     case .date:
-      return (tree as! Date).string(format: date)
+      return (tree as! Date).string(format: format)
     case .array:
       return "\"" + (tree as! [String]).joined(separator: "\" \"") + "\""
     case .dict:
@@ -141,8 +141,8 @@ fileprivate extension Data {
 }
 
 fileprivate extension Date {
-  func string(format: DateFormat) -> String {
-    if format == .iso8601 {
+  func string(format: StringifyFormat) -> String {
+    if format == .defaults {
       return ISO8601DateFormatter().string(from: self)
     }
     let posixFormatter = DateFormatter()
