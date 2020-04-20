@@ -1,7 +1,7 @@
 import Foundation
 
 enum DateFormat: Int {
-  case long
+  case plistBuddy
   case iso8601
 }
 
@@ -44,10 +44,10 @@ class ShellScriptCreator {
         }
       }
       for baby in descendant.plist.babys(path: descendant.path) {
-        if baby.plist.type == .date || baby.plist.type == .data {
-          ErrorMessage("# Not support that deep value type is data or date")
+        if baby.plist.type == .data {
+          ErrorMessage("# Not support that deep value type is data")
         }
-        let value = baby.plist.string(date: .iso8601)
+        let value = baby.plist.string(date: .plistBuddy)
         plistBuddy(command: .Add, path: baby.path, typeAndValue: "\(baby.plist.type) \(value)", tmpFile: tmpFile)
       }
     }
@@ -116,10 +116,7 @@ fileprivate extension Plist {
     case .data:
       return (tree as! Data).hexEncodedString()
     case .date:
-      if date == .iso8601 {
-        return ISO8601DateFormatter().string(from: tree as! Date)
-      }
-      return DateFormatter().string(from: tree as! Date)
+      return (tree as! Date).string(format: date)
     case .array:
       return "\"" + (tree as! [String]).joined(separator: "\" \"") + "\""
     case .dict:
@@ -140,5 +137,17 @@ fileprivate extension Data {
   func hexEncodedString(options: HexEncodingOptions = []) -> String {
     let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
     return map { String(format: format, $0) }.joined()
+  }
+}
+
+fileprivate extension Date {
+  func string(format: DateFormat) -> String {
+    if format == .iso8601 {
+      return ISO8601DateFormatter().string(from: self)
+    }
+    let posixFormatter = DateFormatter()
+    posixFormatter.locale = Locale(identifier: "en_US_POSIX")
+    posixFormatter.dateFormat = "E MMM dd HH:mm:ss yyyy z"
+    return posixFormatter.string(from: self)
   }
 }
