@@ -44,9 +44,11 @@ class ShellScriptCreator {
         }
       }
       for baby in descendant.plist.babys(path: descendant.path) {
+        /*
         if baby.plist.type == .data {
           ErrorMessage("# Not support that deep value type is data")
         }
+        */
         let value = baby.plist.string(format: .plistBuddy)
         plistBuddy(command: .Add, path: baby.path, typeAndValue: "\(baby.plist.type) \(value)", tmpFile: tmpFile)
       }
@@ -114,7 +116,7 @@ fileprivate extension Plist {
     case .bool:
       return tree as! Bool ? "true" : "false"
     case .data:
-      return (tree as! Data).hexEncodedString()
+      return (tree as! Data).string(format: format)
     case .date:
       return (tree as! Date).string(format: format)
     case .array:
@@ -129,12 +131,18 @@ fileprivate extension Plist {
 }
 
 fileprivate extension Data {
+  func string(format: StringifyFormat) -> String {
+    if format == .defaults {
+      return hexEncodedString()
+    }
+    return hexEncodedString()
+    // return base64EncodedString()
+  }
   struct HexEncodingOptions: OptionSet {
     let rawValue: Int
     static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
   }
-
-  func hexEncodedString(options: HexEncodingOptions = []) -> String {
+  private func hexEncodedString(options: HexEncodingOptions = []) -> String {
     let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
     return map { String(format: format, $0) }.joined()
   }
