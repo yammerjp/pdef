@@ -8,5 +8,7 @@ test-run :
 	./test/run.sh 2-array-dict-add
 	./test/run.sh 3-deep-without-data-date
 	./test/run.sh 4-deep-without-data
-#	./test/run.sh 5-deep
+	./test/run.sh 5-deep
+	./test/run.sh 6-shallow-data-long
+	./test/run.sh 7-deep-data-long
   
