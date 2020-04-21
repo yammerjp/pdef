@@ -24,28 +24,13 @@ class Plist {
 
   func keys() -> [PlistKey] {
     if type == .dict {
-      return dictionaryKeys()
+      return (tree as! NSDictionary).allKeys.map{String(describing: $0)}.sorted()
     }
     if type == .array {
-      return arrayKeys()
+      let lastIndex = (tree as! NSArray).count - 1
+      return lastIndex <= 0 ? [] : [Int](0 ... lastIndex)
     }
     return []
-  }
-
-  private func dictionaryKeys() -> [String] {
-    let dictionaryOrder = { (a: Any, b: Any) -> Bool in
-      !(a as! String > b as! String)
-    }
-    let toString = { (any: Any) -> String in String(describing: any) }
-    return (tree as! NSDictionary).allKeys.map(toString).sorted(by: dictionaryOrder)
-  }
-
-  private func arrayKeys() -> [Int] {
-    let lastIndex = (tree as! NSArray).count - 1
-    if lastIndex <= 0 {
-      return []
-    }
-    return [Int](0 ... lastIndex)
   }
 
   func childsAreString() -> Bool {
@@ -53,12 +38,7 @@ class Plist {
     if keys.count == 0 {
       return false
     }
-    for key in keys {
-      if childPlist(key: key).type != .string {
-        return false
-      }
-    }
-    return true
+    return !keys.contains{ childPlist(key: $0).type != .string }
   }
 
   func childPlist(key: PlistKey) -> Plist {
