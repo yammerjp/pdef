@@ -44,11 +44,10 @@ class ShellScriptCreator {
         }
       }
       for baby in descendant.plist.babys(path: descendant.path) {
-        /*
         if baby.plist.type == .data {
-          ErrorMessage("# Not support that deep value type is data")
+          plistBuddyAddData(path: baby.path, value: baby.plist.tree as! Data, tmpFile: tmpFile)
+          continue
         }
-        */
         let value = baby.plist.string(format: .plistBuddy)
         plistBuddy(command: .Add, path: baby.path, typeAndValue: "\(baby.plist.type) \(value)", tmpFile: tmpFile)
       }
@@ -85,6 +84,14 @@ class ShellScriptCreator {
   private func plistBuddy(command: PlistBuddyCommand, path: [PlistKey], typeAndValue: String, tmpFile: String) {
     let pathString = path.dropFirst().map { $0 }.plistBuddyPath()
     print("/usr/libexec/PlistBuddy -c '\(command) \(pathString) \(typeAndValue)' \(tmpFile)")
+  }
+
+  private func plistBuddyAddData(path: [PlistKey], value: Data, tmpFile: String){
+    let valueBase64 = value.base64EncodedString().escapeSlash()
+    let dummy = "PatchDefaultsReplace"
+    let dummyBase64 = dummy.data(using: .utf8)?.base64EncodedString()
+    plistBuddy(command: .Add, path: path, typeAndValue: "data \"\(dummy)\"", tmpFile: tmpFile)
+    print("sed -e 's/\(dummyBase64!)/\(valueBase64)/' -i  \"\" \(tmpFile)")
   }
 }
 
@@ -145,5 +152,16 @@ fileprivate extension Date {
     posixFormatter.locale = Locale(identifier: "en_US_POSIX")
     posixFormatter.dateFormat = "E MMM dd HH:mm:ss yyyy z"
     return posixFormatter.string(from: self)
+  }
+}
+
+fileprivate extension String {
+  func escapeSlash() -> String {
+    let slash = "/"
+    let escapedSlash = "\\/"
+    return replacingOccurrences(
+      of: slash,
+      with: escapedSlash
+    )
   }
 }
