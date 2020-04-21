@@ -116,7 +116,7 @@ fileprivate extension Plist {
     case .bool:
       return tree as! Bool ? "true" : "false"
     case .data:
-      return (tree as! Data).string(format: format)
+      return "\"\( (tree as! Data).hexEncodedString() )\""
     case .date:
       return (tree as! Date).string(format: format)
     case .array:
@@ -131,20 +131,8 @@ fileprivate extension Plist {
 }
 
 fileprivate extension Data {
-  func string(format: StringifyFormat) -> String {
-    if format == .defaults {
-      return hexEncodedString()
-    }
-    return hexEncodedString()
-    // return base64EncodedString()
-  }
-  struct HexEncodingOptions: OptionSet {
-    let rawValue: Int
-    static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
-  }
-  private func hexEncodedString(options: HexEncodingOptions = []) -> String {
-    let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
-    return map { String(format: format, $0) }.joined()
+  func hexEncodedString() -> String {
+    return map { String(format: "%02hhx", $0) }.joined()
   }
 }
 
