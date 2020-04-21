@@ -1,8 +1,8 @@
 import Foundation
 
-enum DateFormat: Int {
+enum StringifyFormat: Int {
   case plistBuddy
-  case iso8601
+  case defaults
 }
 
 enum PlistBuddyCommand: String {
@@ -45,9 +45,10 @@ class ShellScriptCreator {
       }
       for baby in descendant.plist.babys(path: descendant.path) {
         if baby.plist.type == .data {
-          ErrorMessage("# Not support that deep value type is data")
+          plistBuddyAddData(path: baby.path, value: baby.plist.tree as! Data, tmpFile: tmpFile)
+          continue
         }
-        let value = baby.plist.string(date: .plistBuddy)
+        let value = baby.plist.string(format: .plistBuddy)
         plistBuddy(command: .Add, path: baby.path, typeAndValue: "\(baby.plist.type) \(value)", tmpFile: tmpFile)
       }
     }
@@ -68,7 +69,7 @@ class ShellScriptCreator {
   }
 
   private func defaultsWrite(typeOption: String) {
-    let valueString = descendant.plist.string(date: .iso8601)
+    let valueString = descendant.plist.string(format: .defaults)
     print("defaults write \(domain) \"\(key)\" -\(typeOption) \(valueString)")
   }
 
@@ -83,6 +84,14 @@ class ShellScriptCreator {
   private func plistBuddy(command: PlistBuddyCommand, path: [PlistKey], typeAndValue: String, tmpFile: String) {
     let pathString = path.dropFirst().map { $0 }.plistBuddyPath()
     print("/usr/libexec/PlistBuddy -c '\(command) \(pathString) \(typeAndValue)' \(tmpFile)")
+  }
+
+  private func plistBuddyAddData(path: [PlistKey], value: Data, tmpFile: String){
+    let valueBase64 = value.base64EncodedString().escapeSlash()
+    let dummy = "PatchDefaultsReplace"
+    let dummyBase64 = dummy.data(using: .utf8)?.base64EncodedString()
+    plistBuddy(command: .Add, path: path, typeAndValue: "data \"\(dummy)\"", tmpFile: tmpFile)
+    print("sed -e 's/\(dummyBase64!)/\(valueBase64)/' -i  \"\" \(tmpFile)")
   }
 }
 
@@ -103,7 +112,7 @@ fileprivate extension Array where Element == PlistKey {
 }
 
 fileprivate extension Plist {
-  func string(date: DateFormat) -> String {
+  func string(format: StringifyFormat) -> String {
     switch type {
     case .string:
       return "\"\(tree as! String)\""
@@ -114,9 +123,9 @@ fileprivate extension Plist {
     case .bool:
       return tree as! Bool ? "true" : "false"
     case .data:
-      return (tree as! Data).hexEncodedString()
+      return "\"\( (tree as! Data).hexEncodedString() )\""
     case .date:
-      return (tree as! Date).string(format: date)
+      return (tree as! Date).string(format: format)
     case .array:
       return "\"" + (tree as! [String]).joined(separator: "\" \"") + "\""
     case .dict:
@@ -129,25 +138,30 @@ fileprivate extension Plist {
 }
 
 fileprivate extension Data {
-  struct HexEncodingOptions: OptionSet {
-    let rawValue: Int
-    static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
-  }
-
-  func hexEncodedString(options: HexEncodingOptions = []) -> String {
-    let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
-    return map { String(format: format, $0) }.joined()
+  func hexEncodedString() -> String {
+    return map { String(format: "%02hhx", $0) }.joined()
   }
 }
 
 fileprivate extension Date {
-  func string(format: DateFormat) -> String {
-    if format == .iso8601 {
+  func string(format: StringifyFormat) -> String {
+    if format == .defaults {
       return ISO8601DateFormatter().string(from: self)
     }
     let posixFormatter = DateFormatter()
     posixFormatter.locale = Locale(identifier: "en_US_POSIX")
     posixFormatter.dateFormat = "E MMM dd HH:mm:ss yyyy z"
     return posixFormatter.string(from: self)
+  }
+}
+
+fileprivate extension String {
+  func escapeSlash() -> String {
+    let slash = "/"
+    let escapedSlash = "\\/"
+    return replacingOccurrences(
+      of: slash,
+      with: escapedSlash
+    )
   }
 }

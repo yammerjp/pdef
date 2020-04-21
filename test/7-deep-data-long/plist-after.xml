@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>autohide</key>
+	<true/>
+	<key>book</key>
+  <dict>
+    <key>autohide</key>
+    <data>
+    Ym9va1QCAAAAAAQQMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAEA
+    AAQAAAADAwAAAAAAIAYAAAABAQAAU3lzdGVtAAAMAAAAAQEAAEFwcGxpY2F0aW9ucwwA
+    AAABAQAAVGV4dEVkaXQuYXBwDAAAAAEGAAAQAAAAIAAAADQAAAAIAAAABAMAAGFZAAD/
+    //8PCAAAAAQDAABs6gYA////DwgAAAAEAwAAI2gHAP///w8MAAAAAQYAAFwAAABsAAAA
+    fAAAAAgAAAAABAAAQcIFLwAAAAAYAAAAAQIAAAIAAAAAAAAADwAAAAAAAAAAAAAAAAAA
+    AAgAAAABCQAAZmlsZTovLy8MAAAAAQEAAE1hY2ludG9zaCBIRAgAAAAEAwAAAFAGXjoA
+    AAAIAAAAAAQAAEHCIL8+vDCNJAAAAAEBAAAwMDg1QzIwMS01NURCLTQyOTQtODU2Ny01
+    NDA0RkQyRkI1ODAYAAAAAQIAAIEAAAABAAAA7xMAAAEAAAAAAAAAAAAAAAEAAAABAQAA
+    LwAAAAAAAAABBQAAqAAAAP7///8BAAAAAAAAAA0AAAAEEAAASAAAAAAAAAAFEAAAjAAA
+    AAAAAAAQEAAAsAAAAAAAAABAEAAAoAAAAAAAAAACIAAAYAEAAAAAAAAFIAAA0AAAAAAA
+    AAAQIAAA4AAAAAAAAAARIAAAFAEAAAAAAAASIAAA9AAAAAAAAAATIAAABAEAAAAAAAAg
+    IAAAQAEAAAAAAAAwIAAAbAEAAAAAAAAQ0AAABAAAAAAAAAA=
+    </data>
+  </dict>
+	<key>last-messagetrace-stamp</key>
+	<real>608879488.73673606</real>
+	<key>loc</key>
+	<string>ja_JP:JP</string>
+	<key>magnification</key>
+	<true/>
+	<key>mod-count</key>
+	<integer>140</integer>
+	<key>region</key>
+	<string>JP</string>
+	<key>tilesize</key>
+	<integer>55</integer>
+	<key>trash-full</key>
+	<true/>
+	<key>version</key>
+	<integer>1</integer>
+</dict>
+</plist>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>autohide</key>
+	<true/>
+	<key>last-messagetrace-stamp</key>
+	<real>608879488.73673606</real>
+	<key>loc</key>
+	<string>ja_JP:JP</string>
+	<key>magnification</key>
+	<true/>
+	<key>mod-count</key>
+	<integer>140</integer>
+	<key>region</key>
+	<string>JP</string>
+	<key>tilesize</key>
+	<integer>55</integer>
+	<key>trash-full</key>
+	<true/>
+	<key>version</key>
+	<integer>1</integer>
+</dict>
+</plist>
