@@ -11,39 +11,48 @@ enum PlistBuddyCommand: String {
 }
 
 class ShellScriptCreator {
-  let descendant: Descendant
-  init(_ descendant: Descendant) {
-    self.descendant = descendant
-    if descendant.path.count < 2 {
+  let domainPlist: DomainPlist
+
+  init(_ domainPlist: DomainPlist) {
+    self.domainPlist = domainPlist
+    if path.count < 2 {
       ErrorMessage("# treePath.count < 2. skip")
     }
   }
 
+  var plist: Plist {
+    return domainPlist.descendant.plist
+  }
+
+  var path: [PlistKey] {
+    return domainPlist.descendant.path
+  }
+
   var domain: String {
-    return descendant.path[0] as! String
+    return path[0] as! String
   }
 
   var key: String {
-    return descendant.path[1] as! String
+    return path[1] as! String
   }
 
   func add() {
-    if descendant.path.count == 2, !descendant.plist.isParent || descendant.plist.childsAreString() {
-      defaultsWrite(typeOption: descendant.plist.type == .real ? "float" : "\(descendant.plist.type)")
+    if path.count == 2, !plist.isParent || plist.childsAreString() {
+      defaultsWrite(typeOption: plist.type == .real ? "float" : "\(plist.type)")
       return
     }
-    if descendant.path.count == 3, descendant.plist.type == .string {
-      defaultsWrite(typeOption: descendant.path[2] is Int ? "array-add" : "dict-add \"\(descendant.path[2] as! String)\"")
+    if path.count == 3, plist.type == .string {
+      defaultsWrite(typeOption: path[2] is Int ? "array-add" : "dict-add \"\(path[2] as! String)\"")
       return
     }
 
     exportAndImport { tmpFile in
-      if let arrayKeyPathes = descendant.plist.containsArray(path: descendant.path) {
+      if let arrayKeyPathes = plist.containsArray(path: path) {
         for arrayKeyPath in arrayKeyPathes {
           plistBuddy(command: .Add, path: arrayKeyPath, typeAndValue: "array", tmpFile: tmpFile)
         }
       }
-      for baby in descendant.plist.babys(path: descendant.path) {
+      for baby in plist.babys(path: path) {
         if baby.plist.type == .data {
           plistBuddyAddData(path: baby.path, value: baby.plist.tree as! Data, tmpFile: tmpFile)
           continue
@@ -55,21 +64,21 @@ class ShellScriptCreator {
   }
 
   func delete() {
-    if descendant.path.count == 2 {
+    if path.count == 2 {
       print("defaults delete \(domain) \"\(key)\"")
       return
     }
     exportAndImport { tmpFile in
-      plistBuddy(command: .Delete, path: descendant.path, typeAndValue: "", tmpFile: tmpFile)
+      plistBuddy(command: .Delete, path: path, typeAndValue: "", tmpFile: tmpFile)
     }
   }
 
   func update() {
-    print("# update is called. path: \(descendant.path.string(separator: ".")) value: \(descendant.plist)")
+    print("# update is called. path: \(path.string(separator: ".")) value: \(plist)")
   }
 
   private func defaultsWrite(typeOption: String) {
-    let valueString = descendant.plist.string(format: .defaults)
+    let valueString = plist.string(format: .defaults)
     print("defaults write \(domain) \"\(key)\" -\(typeOption) \(valueString)")
   }
 

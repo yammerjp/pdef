@@ -11,8 +11,8 @@ let domain = CommandLine.arguments[1]
 let domainPlistTreeA = loadFile(path: CommandLine.arguments[2], format: format)
 let domainPlistTreeB = loadFile(path: CommandLine.arguments[3], format: format)
 
-let plistA = DomainPlsit(domainTree: domainPlistTreeA, domain: domain)
-let plistB = DomainPlsit(domainTree: domainPlistTreeB, domain: domain)
+let plistA = DomainPlist(domainTree: domainPlistTreeA, domain: domain)
+let plistB = DomainPlist(domainTree: domainPlistTreeB, domain: domain)
 
 let diff = Diff(A: plistA, B: plistB)
 diff.comparePlist()

@@ -1,16 +1,8 @@
 import Foundation
 
-class DomainPlsit {
+class DomainPlist {
   private let rootPlist: Plist
   private(set) var descendant: Descendant
-
-  var domain: String {
-    return descendant.path[0] as! String
-  }
-
-  var key: String {
-    return descendant.path[1] as! String
-  }
 
   init(rootTree: NSDictionary) {
     rootPlist = Plist(tree: rootTree)
