@@ -54,7 +54,7 @@ class Diff {
 
   private func compareValue() {
     guard let commonType = self.commonType else {
-      B.update()
+    B.update(before: A)
       return
     }
     if commonType == .dict || commonType == .array {
@@ -64,7 +64,7 @@ class Diff {
     if String(describing: A.descendant.plist) == String(describing: B.descendant.plist) {
       return
     }
-    B.update()
+    B.update(before: A)
   }
 
   private var commonType: PlistType? {

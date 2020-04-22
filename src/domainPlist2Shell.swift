@@ -64,8 +64,12 @@ class DomainPlist2Shell: DomainPlist {
     }
   }
 
-  func update() {
-    print("# update is called. path: \(path.string(separator: ".")) value: \(plist)")
+  func update(before: DomainPlist2Shell) {
+    ErrorMessage( "# Update value of same key is not supported. \n"
+                + "# before path: \(before.path.string(separator: ".")) value: \(before.plist)\n"
+                + "# after  path: \(       path.string(separator: ".")) value: \(       plist)\n"
+    )
+    ErrorMessage("never printed message")
   }
 
   private func defaultsWrite(typeOption: String) {
