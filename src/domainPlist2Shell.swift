@@ -10,22 +10,13 @@ enum PlistBuddyCommand: String {
   case Delete
 }
 
-class ShellScriptCreator {
-  let domainPlist: DomainPlist
-
-  init(_ domainPlist: DomainPlist) {
-    self.domainPlist = domainPlist
-    if path.count < 2 {
-      ErrorMessage("# treePath.count < 2. skip")
-    }
-  }
-
+class DomainPlist2Shell: DomainPlist {
   var plist: Plist {
-    return domainPlist.descendant.plist
+    return descendant.plist
   }
 
   var path: [PlistKey] {
-    return domainPlist.descendant.path
+    return descendant.path
   }
 
   var domain: String {

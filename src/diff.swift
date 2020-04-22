@@ -1,10 +1,10 @@
 import Foundation
 
 class Diff {
-  let A: DomainPlist
-  let B: DomainPlist
+  let A: DomainPlist2Shell
+  let B: DomainPlist2Shell
 
-  init(A: DomainPlist, B: DomainPlist) {
+  init(A: DomainPlist2Shell, B: DomainPlist2Shell) {
     self.A = A
     self.B = B
   }
@@ -42,19 +42,19 @@ class Diff {
 
   private func containsOnlyA(key: PlistKey) {
     A.pushDescendantPlistPath(key: key)
-    ShellScriptCreator(A).delete()
+    A.delete()
     A.popDescendantPlistPath()
   }
 
   private func containsOnlyB(key: PlistKey) {
     B.pushDescendantPlistPath(key: key)
-    ShellScriptCreator(B).add()
+    B.add()
     B.popDescendantPlistPath()
   }
 
   private func compareValue() {
     guard let commonType = self.commonType else {
-      ShellScriptCreator(B).update()
+      B.update()
       return
     }
     if commonType == .dict || commonType == .array {
@@ -64,7 +64,7 @@ class Diff {
     if String(describing: A.descendant.plist) == String(describing: B.descendant.plist) {
       return
     }
-    ShellScriptCreator(B).update()
+    B.update()
   }
 
   private var commonType: PlistType? {
