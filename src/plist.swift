@@ -60,16 +60,16 @@ class Plist {
     return plist
   }
 
-  func childs() -> [Plist] {
-    return keys().map{ childPlist(key: $0)}
+  func childs() -> [(PlistKey, Plist)] {
+    return keys().map{ ($0, childPlist(key: $0) )}
   }
 
   func babys(path: [PlistKey]) -> [Descendant] {
     if !isParent {
       return [Descendant(path: path, plist: self)]
     }
-    return keys().map { key -> [Descendant] in
-      childPlist(key: key).babys(path: path + [key])
+    return childs().map { (key,child) -> [Descendant] in 
+      child.babys(path: path + [key])
     }.flatMap { $0 }
   }
 
