@@ -18,17 +18,17 @@ class Diff {
     let keysB = B.descendant.plist.keys()
     let keysAll = keysA.joinNotContains(keysB)
 
-    for key in keysAll {
+    keysAll.forEach { key in
       if keysA.contains(key) {
         if keysB.contains(key) {
           compareValueOfSameKey(key: key)
-          continue
+          return
         }
         containsOnlyA(key: key)
-        continue
+        return
       }
       containsOnlyB(key: key)
-      continue
+      return
     }
   }
 

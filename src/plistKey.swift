@@ -16,21 +16,10 @@ extension Array where Element == PlistKey {
   }
 
   func contains(_ item: PlistKey) -> Bool {
-    for e in self {
-      if "\(e)" == "\(item)" {
-        return true
-      }
-    }
-    return false
+    return contains{"\($0)" == "\(item)"}
   }
 
   func joinNotContains(_ items: [Element]) -> [Element] {
-    var joined = self
-    for item in items {
-      if !joined.contains(item) {
-        joined.append(item)
-      }
-    }
-    return joined
+    return self + items.filter { !self.contains($0)}
   }
 }

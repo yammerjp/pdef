@@ -39,14 +39,14 @@ class DomainPlist2Shell: DomainPlist {
 
     exportAndImport { tmpFile in
       if let arrayKeyPathes = plist.containsArray(path: path) {
-        for arrayKeyPath in arrayKeyPathes {
-          plistBuddy(command: .Add, path: arrayKeyPath, typeAndValue: "array", tmpFile: tmpFile)
+        arrayKeyPathes.forEach {
+          plistBuddy(command: .Add, path: $0, typeAndValue: "array", tmpFile: tmpFile)
         }
       }
-      for baby in plist.babys(path: path) {
+      plist.babys(path: path).forEach { baby in
         if baby.plist.type == .data {
           plistBuddyAddData(path: baby.path, value: baby.plist.tree as! Data, tmpFile: tmpFile)
-          continue
+          return
         }
         let value = baby.plist.string(format: .plistBuddy)
         plistBuddy(command: .Add, path: baby.path, typeAndValue: "\(baby.plist.type) \(value)", tmpFile: tmpFile)

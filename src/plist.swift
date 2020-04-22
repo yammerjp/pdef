@@ -54,10 +54,14 @@ class Plist {
 
   func descendantPlist(path: [PlistKey]) -> Plist {
     var plist = self
-    for key in path {
-      plist = plist.childPlist(key: key)
+    path.forEach {
+      plist = plist.childPlist(key: $0)
     }
     return plist
+  }
+
+  func childs() -> [Plist] {
+    return keys().map{ childPlist(key: $0)}
   }
 
   func babys(path: [PlistKey]) -> [Descendant] {
@@ -77,8 +81,8 @@ class Plist {
     if type == .array {
       keysArray += [path]
     }
-    for key in keys() {
-      if let newPathes = childPlist(key: key).containsArray(path: path + [key]) {
+    keys().forEach {
+      if let newPathes = childPlist(key: $0).containsArray(path: path + [$0]) {
         keysArray += newPathes
       }
     }
