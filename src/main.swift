@@ -16,13 +16,16 @@ func main() {
 }
 
 func interpretArgs(args: [String])-> (domain: String?, pathBefore: String, pathAfter: String) {
-  if args.count < 1 {
-    ErrorMessage("Missing Arguments")
+  if args.count < 2 {
+    fputs("Missing arguments.\n", stderr)
+    fputs(UsageMessage, stderr)
+    exit(1)
   }
 
   if args[1] == "-h" || args[1] == "--help" {
-    let helpMessage = "Help messages"
-    fputs(helpMessage, stderr)
+    fputs(HelpMessage, stderr)
+    exit(0)
+  }
 
   if args[1] == "-v" || args[1] == "--version" {
     fputs(VersionMessage, stderr)
@@ -31,8 +34,10 @@ func interpretArgs(args: [String])-> (domain: String?, pathBefore: String, pathA
 
   let withDomainOption = args[1] == "-d" || args[1] == "--domain"
 
-  if args.count < 2 || withDomainOption && args.count < 4 {
-    ErrorMessage("Missing Arguments")
+  if args.count < 3 ||  ( withDomainOption && args.count < 5 ) {
+    fputs("Missing arguments.\n", stderr)
+    fputs(UsageMessage, stderr)
+    exit(1)
   }
 
   let domain = withDomainOption ? args[2] : nil

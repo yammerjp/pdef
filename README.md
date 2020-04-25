@@ -1,6 +1,6 @@
 # patch-defaults
 
-patch-defaults generates shell-script to set Mac OS X User Defaults (property list)
+patch-defaults generates shell-script to set Mac OS X User Defaults (property list).
 
 ## Description
 
