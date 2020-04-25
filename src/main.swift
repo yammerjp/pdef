@@ -1,20 +1,25 @@
 import Foundation
 
-createTmpDirectory()
+func main() {
+  createTmpDirectory()
+  let arg = interpretArgs(args: CommandLine.arguments)
 
-if CommandLine.arguments.count < 4 {
-  ErrorMessage("Missing Arguments")
+  let plistA = getDomainPlist2Shell(path: arg.pathBefore, domain: arg.domain)
+  let plistB = getDomainPlist2Shell(path: arg.pathAfter, domain: arg.domain)
+
+  let diff = Diff(A: plistA, B: plistB)
+  diff.comparePlist()
+
+  removeTmpDirectory()
 }
 
-let format: DomainPlsitFormat = .xml
-let domain = CommandLine.arguments[1]
-let domainPlistTreeA = loadFile(path: CommandLine.arguments[2], format: format)
-let domainPlistTreeB = loadFile(path: CommandLine.arguments[3], format: format)
+func getDomainPlist2Shell(path: String, domain: String?)-> DomainPlist2Shell {
+  if domain == nil {
+    let allDomainDictionary = loadFile(path: path, format: .ascii)
+    return DomainPlist2Shell(rootTree: allDomainDictionary)
+  }
+  let domainPlistTree = loadFile(path: path, format: .xml)
+  return DomainPlist2Shell(domainTree: domainPlistTree, domain: domain!)
+}
 
-let plistA = DomainPlist2Shell(domainTree: domainPlistTreeA, domain: domain)
-let plistB = DomainPlist2Shell(domainTree: domainPlistTreeB, domain: domain)
-
-let diff = Diff(A: plistA, B: plistB)
-diff.comparePlist()
-
-removeTmpDirectory()
+main()
