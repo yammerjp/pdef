@@ -27,7 +27,7 @@ sh "test/$test_name/defaults.sh" "$domain"
 dump 2.xml
 
 echo "Info: Fix changed plist"
-./bin/patch-defaults "$domain" 2.xml 1.xml | sh
+./bin/patch-defaults --domain "$domain" 2.xml 1.xml | sh
 
 dump 3.xml
 
@@ -37,7 +37,7 @@ if ! diff 1.xml 3.xml ; then
 fi
 
 echo 'Info: Change fixed plist'
-./bin/patch-defaults "$domain" 1.xml 2.xml | sh
+./bin/patch-defaults --domain "$domain" 1.xml 2.xml | sh
 
 dump 4.xml
 
