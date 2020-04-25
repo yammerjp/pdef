@@ -25,7 +25,7 @@ func loadFile(path: String, format: DomainPlsitFormat) -> NSDictionary {
 
   return loadValidSyntaxPlist(path: loadindPlistPath)
 }
-
+/*
 func createTmpDirectory() {
   mkdir(path: tmpDir)
 }
@@ -33,6 +33,7 @@ func createTmpDirectory() {
 func removeTmpDirectory() {
   rmdir(path: tmpDir)
 }
+*/
 
 fileprivate func full(path: String) -> String {
   if path[path.startIndex] == "/" {
@@ -83,7 +84,7 @@ fileprivate extension String {
   }
 }
 
-fileprivate func mkdir(path: String) {
+func mkdir(path: String) {
   do {
     try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
   } catch {
@@ -91,7 +92,7 @@ fileprivate func mkdir(path: String) {
   }
 }
 
-fileprivate func rmdir(path: String) {
+func rmdir(path: String) {
   do {
     try FileManager.default.removeItem(atPath: path)
   } catch {
