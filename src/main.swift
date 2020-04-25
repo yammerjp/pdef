@@ -23,6 +23,9 @@ func interpretArgs(args: [String])-> (domain: String?, pathBefore: String, pathA
   if args[1] == "-h" || args[1] == "--help" {
     let helpMessage = "Help messages"
     fputs(helpMessage, stderr)
+
+  if args[1] == "-v" || args[1] == "--version" {
+    fputs(VersionMessage, stderr)
     exit(0)
   }
 
