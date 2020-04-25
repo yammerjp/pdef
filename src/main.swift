@@ -1,7 +1,5 @@
 import Foundation
 
-main()
-
 func main() {
   createTmpDirectory()
   let arg = interpretArgs(args: CommandLine.arguments)
@@ -55,3 +53,5 @@ func getDomainPlist2Shell(path: String, domain: String?)-> DomainPlist2Shell {
   let domainPlistTree = loadFile(path: path, format: .xml)
   return DomainPlist2Shell(domainTree: domainPlistTree, domain: domain!)
 }
+
+main()
