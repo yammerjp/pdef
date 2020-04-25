@@ -6,9 +6,9 @@ pdef generates shell-script to set Mac OS X User Defaults (property list).
 
 Before and after you set any environmental settings from GUI, please write out property lists to files.
 
-pdef generate a shell-script with comparing files of a property list.
+pdef generates a shell-script with comparing files of a property list.
 
-Next time you set same enviromental settings, you only excute the shell-script without manipulating GUI.
+Next time you set the same environmental settings, you only execute the shell-script without manipulating GUI.
 
 ## Install
 
