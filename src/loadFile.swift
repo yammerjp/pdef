@@ -5,7 +5,7 @@ enum DomainPlsitFormat: Int {
   case ascii
 }
 
-fileprivate let tmpDir = "/tmp/patch-defaults"
+fileprivate let tmpDir = "/tmp/pdef"
 
 func loadFile(path: String, format: DomainPlsitFormat) -> NSDictionary {
   var loadindPlistPath: String = ""
@@ -73,7 +73,7 @@ fileprivate extension String {
 
   func replaceBinary2Dummy() -> String {
     let regexOfInvalidSyntax = "\\{length = [0-9]+, bytes = ([0-9]| |\\.|x|[a-f])+\\}"
-    let replacingString = "\"This String is replaced by patch-defaults. Original plist file (old-style-ascii) contains a binary data with invalid syntax\""
+    let replacingString = "\"This String is replaced by pdef. Original plist file (old-style-ascii) contains a binary data with invalid syntax\""
     return replacingOccurrences(
       of: regexOfInvalidSyntax,
       with: replacingString,

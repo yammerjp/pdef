@@ -1,6 +1,6 @@
 all :
 	mkdir -p bin
-	swiftc -o bin/patch-defaults src/*.swift
+	swiftc -o bin/pdef src/*.swift
 clean :
 	rm -r bin
 test-run :

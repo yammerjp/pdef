@@ -1,28 +1,28 @@
-# patch-defaults
+# pdef
 
-patch-defaults generates shell-script to set Mac OS X User Defaults (property list).
+pdef generates shell-script to set Mac OS X User Defaults (property list).
 
 ## Description
 
 Before and after you set any environmental settings from GUI, please write out property lists to files.
 
-patch-defaults generate a shell-script with comparing files of a property list.
+pdef generate a shell-script with comparing files of a property list.
 
 Next time you set same enviromental settings, you only excute the shell-script without manipulating GUI.
 
 ## Install
 
 ```sh
-$ git clone https://github.com/basd4g/patch-defaults
-$ cd patch-defaults
+$ git clone https://github.com/basd4g/pdef
+$ cd pdef
 $ make
-$ cp bin/patch-defaults /usr/local/bin/
+$ cp bin/pdef /usr/local/bin/
 ```
 
 ## Uninstall
 
 ```sh
-$ rm /usr/local/bin/patch-defaults 
+$ rm /usr/local/bin/pdef 
 ```
 
 ## Usage
@@ -34,12 +34,12 @@ $ defaults read > before
 
 $ defaults read > after
 
-$ patch-defaults before after > path/to/file
+$ pdef before after > path/to/file
 ```
 
 ## License
 
-[MIT](https://github.com/basd4g/patch-defaults/blob/master/LICENSE)
+[MIT](https://github.com/basd4g/pdef/blob/master/LICENSE)
 
 ## Auther
 
