@@ -1,25 +1,31 @@
 # patch-defaults
 
-patch-defaults is CLI tool to generate shell-script to set property list of macOS.
-
-__This is under developping...__
+patch-defaults generates shell-script to set Mac OS X User Defaults (property list)
 
 ## Description
 
-Before and after you set any environmental setting from GUI, Please write property list to files.
+Before and after you set any environmental settings from GUI, please write out property lists to files.
 
-patch-defaults generate a shell-script with comparing property lists.
+patch-defaults generate a shell-script with comparing files of a property list.
 
-Next time you set same enviromental settings, you only excute the shell-script without manipulate GUI.
+Next time you set same enviromental settings, you only excute the shell-script without manipulating GUI.
 
-## Install (Plan)
+## Install
 
 ```sh
-$ brew tap basd4g/patch-defaults
-$ brew install patch-defaults
+$ git clone https://github.com/basd4g/patch-defaults
+$ cd patch-defaults
+$ make
+$ cp bin/patch-defaults /usr/local/bin/
 ```
 
-## Usage (Plan)
+## Uninstall
+
+```sh
+$ rm /usr/local/bin/patch-defaults 
+```
+
+## Usage
 
 ```sh
 $ defaults read > before
@@ -29,39 +35,6 @@ $ defaults read > before
 $ defaults read > after
 
 $ patch-defaults before after > path/to/file
-```
-
-## Generated shell-script example (Plan)
-
-```sh
-#!/bin/sh
-
-if ! which defaults > /dev/null ; then
-  exit 1
-fi
-
-defaults write example.com hoge  -array-add fugafuga
-defaults delete -g hogehoge fugafuga
-```
-
-## For developper
-
-```sh
-# Clone
-$ git clone https://github.com/basd4g/patch-defaults
-$ cd patch-defaults
-
-# Build
-$ make
-
-# Run Test
-$ make
-
-# Run
-$ defaults export -g - > before.plist
-$ defaults write -g patch-default -string debugString
-$ defaults export -g - > after.plist
-$ bin/patch-defaults -g before.plist after.plist
 ```
 
 ## License
