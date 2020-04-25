@@ -1,20 +1,49 @@
 import Foundation
 
-createTmpDirectory()
+main()
 
-if CommandLine.arguments.count < 4 {
-  ErrorMessage("Missing Arguments")
+func main() {
+  createTmpDirectory()
+  let arg = interpretArgs(args: CommandLine.arguments)
+
+  let plistA = getDomainPlist2Shell(path: arg.pathBefore, domain: arg.domain)
+  let plistB = getDomainPlist2Shell(path: arg.pathAfter, domain: arg.domain)
+
+  let diff = Diff(A: plistA, B: plistB)
+  diff.comparePlist()
+
+  removeTmpDirectory()
 }
 
-let format: DomainPlsitFormat = .xml
-let domain = CommandLine.arguments[1]
-let domainPlistTreeA = loadFile(path: CommandLine.arguments[2], format: format)
-let domainPlistTreeB = loadFile(path: CommandLine.arguments[3], format: format)
+func interpretArgs(args: [String])-> (domain: String?, pathBefore: String, pathAfter: String) {
+  if args.count < 1 {
+    ErrorMessage("Missing Arguments")
+  }
 
-let plistA = DomainPlist2Shell(domainTree: domainPlistTreeA, domain: domain)
-let plistB = DomainPlist2Shell(domainTree: domainPlistTreeB, domain: domain)
+  if args[1] == "-h" || args[1] == "--help" {
+    let helpMessage = "Help messages"
+    fputs(helpMessage, stderr)
+    exit(0)
+  }
 
-let diff = Diff(A: plistA, B: plistB)
-diff.comparePlist()
+  let withDomainOption = args[1] == "-d" || args[1] == "--domain"
 
-removeTmpDirectory()
+  if args.count < 2 || withDomainOption && args.count < 4 {
+    ErrorMessage("Missing Arguments")
+  }
+
+  let domain = withDomainOption ? args[2] : nil
+  let pathBefore = withDomainOption ? args[3] : args[1]
+  let pathAfter = withDomainOption ? args[4] : args[2]
+
+  return (domain: domain, pathBefore: pathBefore, pathAfter: pathAfter)
+}
+
+func getDomainPlist2Shell(path: String, domain: String?)-> DomainPlist2Shell {
+  if domain == nil {
+    let allDomainDictionary = loadFile(path: path, format: .ascii)
+    return DomainPlist2Shell(rootTree: allDomainDictionary)
+  }
+  let domainPlistTree = loadFile(path: path, format: .xml)
+  return DomainPlist2Shell(domainTree: domainPlistTree, domain: domain!)
+}
