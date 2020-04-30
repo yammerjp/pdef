@@ -1,7 +1,7 @@
 [![CI](https://github.com/basd4g/pdef/workflows/CI/badge.svg)](https://github.com/basd4g/pdef/actions)
 # pdef
 
-pdef generates shell-script to set Mac OS X User Defaults (property list).
+pdef generates patch script of Mac OS X User Defaults (property list).
 
 ## Description
 
@@ -14,16 +14,15 @@ Next time you set the same environmental settings, you only execute the shell-sc
 ## Install
 
 ```sh
-$ git clone https://github.com/basd4g/pdef
+$ git clone https://github.com/basd4g/pdef.git
 $ cd pdef
-$ make
-$ cp bin/pdef /usr/local/bin/
+$ make install
 ```
 
 ## Uninstall
 
 ```sh
-$ rm /usr/local/bin/pdef 
+$ make uninstall
 ```
 
 ## Usage
@@ -41,6 +40,13 @@ $ pdef before after > path/to/file
 ## Demo
 
 ![demo movie](demo.gif)
+
+## Build
+
+```sh
+$ make
+# built binary is on bin/pdef
+```
 
 ## License
 

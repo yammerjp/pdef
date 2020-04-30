@@ -1,6 +1,11 @@
-all :
+build :
 	mkdir -p bin
 	swiftc -o bin/pdef src/*.swift
+install :
+	make build
+	cp bin/pdef /usr/local/bin/pdef
+uninstall :
+	rm /usr/local/bin/pdef
 clean :
 	rm -r bin
 test-run :
