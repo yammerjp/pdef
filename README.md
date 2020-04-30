@@ -1,4 +1,4 @@
-[![CI](https://github.com/basd4g/pdef/workflows/ci/badge.svg)](https://github.com/basd4g/pdef/actions)
+[![CI](https://github.com/basd4g/pdef/workflows/CI/badge.svg)](https://github.com/basd4g/pdef/actions)
 # pdef
 
 pdef generates shell-script to set Mac OS X User Defaults (property list).
