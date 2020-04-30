@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  E2Etest:
+  Test:
     runs-on: macos-latest
 
     steps:
@@ -19,6 +19,6 @@ jobs:
     - name: Build
       run : make
 
-    - name: Run
+    - name: Run test
       run : make test-run
 
