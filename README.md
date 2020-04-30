@@ -14,15 +14,8 @@ Next time you set the same environmental settings, you only execute the shell-sc
 ## Install
 
 ```sh
-$ git clone https://github.com/basd4g/pdef.git
-$ cd pdef
-$ make install
-```
-
-## Uninstall
-
-```sh
-$ make uninstall
+$ brew tap basd4g/tap
+$ brew install pdef
 ```
 
 ## Usage
@@ -44,6 +37,8 @@ $ pdef before after > path/to/file
 ## Build
 
 ```sh
+$ git clone https://github.com/basd4g/pdef.git
+$ cd pdef
 $ make
 # built binary is on bin/pdef
 ```
