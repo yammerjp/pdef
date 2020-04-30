@@ -1,1 +1,1 @@
-let VersionMessage =  "v1.0.0"
+let VersionMessage =  "v1.0.1"
