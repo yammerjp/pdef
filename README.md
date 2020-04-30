@@ -37,6 +37,10 @@ $ defaults read > after
 $ pdef before after > path/to/file
 ```
 
+## Demo
+
+![demo movie](demo.gif)
+
 ## License
 
 [MIT](https://github.com/basd4g/pdef/blob/master/LICENSE)
