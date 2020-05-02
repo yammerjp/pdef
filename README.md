@@ -14,8 +14,7 @@ Next time you set the same environmental settings, you only execute the shell-sc
 ## Install
 
 ```sh
-$ brew tap basd4g/tap
-$ brew install pdef
+$ brew install basd4g/tap/pdef
 ```
 
 ## Usage
