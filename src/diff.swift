@@ -19,15 +19,15 @@ class Diff {
     let keysAll = keysA.joinNotContains(keysB)
 
     keysAll.forEach { key in
-      if keysA.contains(key) {
-        if keysB.contains(key) {
-          compareValueOfSameKey(key: key)
-          return
-        }
+      if !keysA.contains(key) {
+        containsOnlyB(key: key)
+        return
+      }
+      if !keysB.contains(key) {
         containsOnlyA(key: key)
         return
       }
-      containsOnlyB(key: key)
+      compareValueOfSameKey(key: key)
       return
     }
   }
