@@ -1,4 +1,4 @@
-[![CI](https://github.com/basd4g/pdef/workflows/CI/badge.svg)](https://github.com/basd4g/pdef/actions)
+[![CI](https://github.com/yammerjp/pdef/workflows/CI/badge.svg)](https://github.com/yammerjp/pdef/actions)
 # pdef
 
 pdef generates patch script of Mac OS X User Defaults (property list).
@@ -14,7 +14,7 @@ Next time you set the same environmental settings, you only execute the shell-sc
 ## Install
 
 ```sh
-$ brew install basd4g/tap/pdef
+$ brew install yammerjp/tap/pdef
 ```
 
 ## Usage
@@ -36,7 +36,7 @@ $ pdef before after > path/to/file
 ## Build
 
 ```sh
-$ git clone https://github.com/basd4g/pdef.git
+$ git clone https://github.com/yammerjp/pdef.git
 $ cd pdef
 $ make
 # built binary is on bin/pdef
@@ -48,5 +48,5 @@ $ make
 
 ## Auther
 
-[basd4g](https://github.com/basd4g)
+[yammerjp](https://github.com/yammerjp)
 
