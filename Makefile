@@ -1,7 +1,8 @@
 build :
 	mkdir -p bin
-	swiftc -o bin/pdef src/*.swift
-	md5 -q src/*.swift > .src-md5
+	swift build -c release
+	cp .build/release/pdef bin/pdef
+	md5 -q Sources/pdef/*.swift > .src-md5
 install :
 	make build
 	cp bin/pdef /usr/local/bin/pdef
