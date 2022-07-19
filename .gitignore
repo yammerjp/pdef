@@ -2,3 +2,4 @@
 .vscode/
 *.plist
 .build
+bin/**/*
