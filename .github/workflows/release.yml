@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags: 
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Init
+      run : cd ${GITHUB_WORKSPACE}
+
+    - name: Check bin is built
+      run : md5 -q src/*.swift | diff - .src-md5
+
+    - name: Build
+      run : make
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: './bin/*'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update Homebrew Formula
+      uses: izumin5210/action-homebrew-tap@releases/v0
+      with:
+        tap: yammerjp/homebrew-tap
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tap-token: ${{ secrets.TAP_GITHUB_TOKEN }}
