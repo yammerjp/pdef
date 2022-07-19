@@ -16,9 +16,6 @@ jobs:
     - name: Init
       run : cd ${GITHUB_WORKSPACE}
 
-    - name: Check bin is built
-      run : md5 -q src/*.swift | diff - .src-md5
-
     - name: Build
       run : make
 
