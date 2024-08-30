@@ -1,4 +1,6 @@
 [![CI](https://github.com/yammerjp/pdef/workflows/CI/badge.svg)](https://github.com/yammerjp/pdef/actions)
+
+[Blog Article (Japanese)](https://memo.yammer.jp/posts/pdef)
 # pdef
 
 pdef generates patch script of Mac OS X User Defaults (property list).
